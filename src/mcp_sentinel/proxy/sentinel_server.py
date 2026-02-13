@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from typing import Any
 
@@ -7,25 +8,42 @@ import mcp.types as types
 from mcp.server.lowlevel import Server
 from mcp.server.models import InitializationOptions
 from mcp.server.stdio import stdio_server
+from mcp.shared.exceptions import McpError
 
 from mcp_sentinel.config import Settings
 from mcp_sentinel.middleware import AuthContext, require_api_key
+from mcp_sentinel.middleware.authz import authorize_tool
+from mcp_sentinel.policy.loader import DEFAULT_POLICY_PATH, load_policy
+from mcp_sentinel.policy.models import Policy
 from mcp_sentinel.proxy.upstream import UpstreamConnector
 
 
-def create_sentinel_server(connector: UpstreamConnector) -> Server[Any, Any]:
+_FORBIDDEN_ERROR = types.ErrorData(code=403, message="Forbidden")
+
+
+def create_sentinel_server(connector: UpstreamConnector, *, policy: Policy) -> Server[Any, Any]:
     server = Server("mcp-sentinel-lite")
 
     async def handle_list_tools(
         req: types.ListToolsRequest,
-        _auth_context: AuthContext,
+        auth_context: AuthContext,
     ) -> types.ServerResult:
-        return types.ServerResult(await connector.list_tools(req.params))
+        listed_tools = await connector.list_tools(req.params)
+        filtered_tools = [
+            tool
+            for tool in listed_tools.tools
+            if authorize_tool(policy, auth_context, tool.name).allowed
+        ]
+        return types.ServerResult(listed_tools.model_copy(update={"tools": filtered_tools}))
 
     async def handle_call_tool(
         req: types.CallToolRequest,
-        _auth_context: AuthContext,
+        auth_context: AuthContext,
     ) -> types.ServerResult:
+        decision = authorize_tool(policy, auth_context, req.params.name)
+        if not decision.allowed:
+            raise McpError(_FORBIDDEN_ERROR)
+
         return types.ServerResult(
             await connector.call_tool(name=req.params.name, arguments=req.params.arguments)
         )
@@ -63,10 +81,12 @@ def _upstream_target(settings: Settings) -> str:
 async def run_stdio_proxy(settings: Settings | None = None) -> None:
     resolved_settings = settings or Settings()
     connector = UpstreamConnector(resolved_settings)
+    policy_path = os.environ.get("SENTINEL_POLICY_PATH", str(DEFAULT_POLICY_PATH))
+    policy = load_policy(policy_path)
 
     try:
         upstream_init = await connector.initialize()
-        server = create_sentinel_server(connector)
+        server = create_sentinel_server(connector, policy=policy)
 
         initialization_options = InitializationOptions(
             server_name=upstream_init.serverInfo.name,
@@ -80,6 +100,7 @@ async def run_stdio_proxy(settings: Settings | None = None) -> None:
             f" listen_addr={resolved_settings.sentinel_listen_host}:{resolved_settings.sentinel_listen_port}"
             f" upstream_transport={resolved_settings.upstream_transport}"
             f" upstream_target={_upstream_target(resolved_settings)}",
+            f" policy_path={policy_path}",
             file=sys.stderr,
             flush=True,
         )
