@@ -10,6 +10,7 @@ from mcp.shared.context import RequestContext
 from mcp.shared.exceptions import McpError
 
 from mcp_sentinel.middleware import auth as auth_middleware
+from mcp_sentinel.policy.models import Policy
 from mcp_sentinel.proxy.sentinel_server import create_sentinel_server
 
 
@@ -94,6 +95,26 @@ def patch_api_key_resolution(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(auth_middleware, "resolve_api_key", fake_resolve_api_key)
 
 
+@pytest.fixture
+def auth_policy() -> Policy:
+    return Policy.model_validate(
+        {
+            "roles": {
+                "admin": {"allow": ["echo"]},
+                "user": {"allow": ["echo"]},
+                "readonly": {"allow": ["echo"]},
+            },
+            "rate_limits": {
+                "per_api_key": {"requests": 120, "window_seconds": 60},
+                "per_tool": {
+                    "default": {"requests": 30, "window_seconds": 60},
+                    "overrides": {},
+                },
+            },
+        }
+    )
+
+
 def _build_request_context(
     *,
     headers: dict[str, str] | None = None,
@@ -134,9 +155,10 @@ async def _call_with_context(
 @pytest.mark.anyio
 async def test_tools_list_and_call_reject_requests_without_api_key(
     connector: FakeUpstreamConnector,
+    auth_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector)
+    server = create_sentinel_server(connector, policy=auth_policy)
 
     list_handler = server.request_handlers[types.ListToolsRequest]
     call_handler = server.request_handlers[types.CallToolRequest]
@@ -167,9 +189,10 @@ async def test_tools_list_and_call_reject_requests_without_api_key(
 @pytest.mark.anyio
 async def test_tools_list_and_call_succeed_with_valid_header_key(
     connector: FakeUpstreamConnector,
+    auth_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector)
+    server = create_sentinel_server(connector, policy=auth_policy)
 
     list_handler = server.request_handlers[types.ListToolsRequest]
     call_handler = server.request_handlers[types.CallToolRequest]
@@ -201,9 +224,10 @@ async def test_tools_list_and_call_succeed_with_valid_header_key(
 @pytest.mark.anyio
 async def test_tools_list_succeeds_with_bearer_authorization_header(
     connector: FakeUpstreamConnector,
+    auth_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector)
+    server = create_sentinel_server(connector, policy=auth_policy)
     list_handler = server.request_handlers[types.ListToolsRequest]
 
     list_result = await _call_with_context(
@@ -219,9 +243,10 @@ async def test_tools_list_succeeds_with_bearer_authorization_header(
 @pytest.mark.anyio
 async def test_tools_list_succeeds_with_query_param_api_key(
     connector: FakeUpstreamConnector,
+    auth_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector)
+    server = create_sentinel_server(connector, policy=auth_policy)
     list_handler = server.request_handlers[types.ListToolsRequest]
 
     list_result = await _call_with_context(
@@ -237,9 +262,10 @@ async def test_tools_list_succeeds_with_query_param_api_key(
 @pytest.mark.anyio
 async def test_tools_list_rejects_invalid_api_key(
     connector: FakeUpstreamConnector,
+    auth_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector)
+    server = create_sentinel_server(connector, policy=auth_policy)
     list_handler = server.request_handlers[types.ListToolsRequest]
 
     with pytest.raises(McpError) as error:

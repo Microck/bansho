@@ -135,7 +135,7 @@ async def fake_resolve_api_key(presented_key: str) -> dict[str, str] | None:
 
     return {
         "api_key_id": "integration-key-id",
-        "role": "readonly",
+        "role": "admin",
     }
 
 
