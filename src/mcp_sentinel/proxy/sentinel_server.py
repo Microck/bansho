@@ -9,16 +9,23 @@ from mcp.server.models import InitializationOptions
 from mcp.server.stdio import stdio_server
 
 from mcp_sentinel.config import Settings
+from mcp_sentinel.middleware import AuthContext, require_api_key
 from mcp_sentinel.proxy.upstream import UpstreamConnector
 
 
 def create_sentinel_server(connector: UpstreamConnector) -> Server[Any, Any]:
     server = Server("mcp-sentinel-lite")
 
-    async def handle_list_tools(req: types.ListToolsRequest) -> types.ServerResult:
+    async def handle_list_tools(
+        req: types.ListToolsRequest,
+        _auth_context: AuthContext,
+    ) -> types.ServerResult:
         return types.ServerResult(await connector.list_tools(req.params))
 
-    async def handle_call_tool(req: types.CallToolRequest) -> types.ServerResult:
+    async def handle_call_tool(
+        req: types.CallToolRequest,
+        _auth_context: AuthContext,
+    ) -> types.ServerResult:
         return types.ServerResult(
             await connector.call_tool(name=req.params.name, arguments=req.params.arguments)
         )
@@ -37,8 +44,8 @@ def create_sentinel_server(connector: UpstreamConnector) -> Server[Any, Any]:
             await connector.get_prompt(name=req.params.name, arguments=req.params.arguments)
         )
 
-    server.request_handlers[types.ListToolsRequest] = handle_list_tools
-    server.request_handlers[types.CallToolRequest] = handle_call_tool
+    server.request_handlers[types.ListToolsRequest] = require_api_key(server, handle_list_tools)
+    server.request_handlers[types.CallToolRequest] = require_api_key(server, handle_call_tool)
     server.request_handlers[types.ListResourcesRequest] = handle_list_resources
     server.request_handlers[types.ReadResourceRequest] = handle_read_resource
     server.request_handlers[types.ListPromptsRequest] = handle_list_prompts
