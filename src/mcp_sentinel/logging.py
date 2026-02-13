@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import sys
 
 import structlog
 from structlog.contextvars import bind_contextvars, clear_contextvars, merge_contextvars
@@ -36,7 +37,9 @@ def configure_logging(level: str = "INFO") -> None:
             structlog.processors.JSONRenderer(),
         ],
         wrapper_class=structlog.make_filtering_bound_logger(log_level),
-        logger_factory=structlog.PrintLoggerFactory(),
+        # Critical: MCP stdio transport uses stdout for JSON-RPC framing.
+        # Logging to stdout breaks clients; keep logs on stderr.
+        logger_factory=structlog.PrintLoggerFactory(file=sys.stderr),
         cache_logger_on_first_use=True,
     )
 

@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import textwrap
 from pathlib import Path
+from typing import cast
 
 import mcp.types as types
 import pytest
 from mcp import ClientSession
 from mcp.client.stdio import StdioServerParameters, stdio_client
+from pydantic import AnyUrl
 
 FAKE_UPSTREAM_SERVER = """
 from __future__ import annotations
@@ -121,9 +123,11 @@ FAKE_SENTINEL_SERVER = """
 from __future__ import annotations
 
 import anyio
+import structlog
 
 import mcp_sentinel.middleware.auth as auth_middleware
 from mcp_sentinel.config import Settings
+from mcp_sentinel.logging import configure_logging
 from mcp_sentinel.proxy.sentinel_server import run_stdio_proxy
 
 TEST_API_KEY = "integration-test-key"
@@ -140,6 +144,9 @@ async def fake_resolve_api_key(presented_key: str) -> dict[str, str] | None:
 
 
 auth_middleware.resolve_api_key = fake_resolve_api_key
+
+configure_logging()
+structlog.get_logger("sentinel-test").info("sentinel_test_log")
 
 
 if __name__ == "__main__":
@@ -205,7 +212,7 @@ async def test_passthrough_tools_resources_and_prompts(tmp_path: Path) -> None:
                 "resource://hello.txt"
             }
 
-            read_result = await session.read_resource("resource://hello.txt")
+            read_result = await session.read_resource(cast(AnyUrl, "resource://hello.txt"))
             assert len(read_result.contents) == 1
             assert isinstance(read_result.contents[0], types.TextResourceContents)
             assert read_result.contents[0].text == "resource body"
