@@ -71,7 +71,7 @@ Security gateway for the Model Context Protocol (MCP) that adds authentication, 
 
 **Duration:** ~1 week
 
-**Status:** In Progress (Plans 03-01, 03-02, and 03-03 completed on 2026-02-13)
+**Status:** Complete (Plans 03-01 through 03-04 completed on 2026-02-13)
 
 **Requirements Covered:**
 - AUTHZ-01: YAML-based policy configuration
@@ -98,6 +98,8 @@ Security gateway for the Model Context Protocol (MCP) that adds authentication, 
 - `src/middleware/authz.py`
 - `src/middleware/rate_limit.py`
 - `config/policies.yaml`
+- `src/mcp_sentinel/proxy/sentinel_server.py` (strict `auth -> authz -> rate_limit -> forward` ordering finalized in 03-04)
+- `tests/test_security_pipeline.py` (bypass-prevention E2E regression added in 03-04)
 
 ---
 

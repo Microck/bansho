@@ -3,10 +3,10 @@
 ## Current Position
 
 Phase: 3 of 5 (Authorization & Rate Limiting)
-Plan: 3 of 4
-Status: In progress
-Last activity: 2026-02-13 - Completed 03-03-PLAN.md
-Progress: ████████░░░░░░░░ 8/16 plans (50%)
+Plan: 4 of 4
+Status: Phase complete
+Last activity: 2026-02-13 - Completed 03-04-PLAN.md
+Progress: █████████░░░░░░░ 9/16 plans (56%)
 
 ---
 
@@ -16,7 +16,7 @@ Progress: ████████░░░░░░░░ 8/16 plans (50%)
 |-------|------|--------|----------|
 | 1 | Foundation | Complete | 3/3 plans |
 | 2 | Authentication | In Progress | 2/3 plans |
-| 3 | Authorization & Rate Limiting | In Progress | 3/4 plans |
+| 3 | Authorization & Rate Limiting | Complete | 4/4 plans |
 | 4 | Audit | Not Started | 0/3 plans |
 | 5 | Demo & Submit | Not Started | 0/3 plans |
 
@@ -50,12 +50,15 @@ Progress: ████████░░░░░░░░ 8/16 plans (50%)
 | 03-03 | Use fixed-window Redis keys bucketed by epoch window for per-key and per-tool counters | Keep limiter deterministic while avoiding additional TTL lookups |
 | 03-03 | Enforce both per-api-key and per-tool quotas, denying on first exceeded dimension | Preserve strict abuse controls while minimizing unnecessary limiter operations |
 | 03-03 | Apply conservative fallback limits when policy rate-limit config is missing | Avoid accidental rate-limit disablement in partial/misconfigured policy scenarios |
+| 03-04 | Execute `tools/call` security gates inline as `auth -> authz -> rate_limit -> forward` | Make pipeline ordering explicit and non-bypassable in one auditable code path |
+| 03-04 | Assert upstream call count in security E2E regression scenarios | Ensure denied/limited flows prove side-effect safety, not just status-code correctness |
+| 03-04 | Stub limiter Redis eval in authz test module | Keep authorization tests deterministic after pipeline integration without external Redis loop coupling |
 
 ---
 
 ## Blockers/Concerns Carried Forward
 
-- None. Ready for 03-04 pipeline ordering and bypass-prevention work.
+- None. Ready to begin Phase 4 audit logging implementation.
 
 ---
 
@@ -63,6 +66,7 @@ Progress: ████████░░░░░░░░ 8/16 plans (50%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-13 | Completed 03-04 explicit auth->authz->rate-limit proxy pipeline wiring with bypass-prevention E2E coverage |
 | 2026-02-13 | Completed 03-03 Redis-backed fixed-window limiter, policy middleware, and 429/reset regression coverage |
 | 2026-02-13 | Completed 03-02 tool-level authorization middleware/wiring with role matrix regression coverage |
 | 2026-02-13 | Completed 03-01 policy schema/loader foundation with default deny-first YAML configuration |
@@ -77,17 +81,17 @@ Progress: ████████░░░░░░░░ 8/16 plans (50%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/03-authz-rate-limit/03-04-PLAN.md`.
-2. Add explicit proxy pipeline ordering coverage (`auth -> authz -> rate limit`) with upstream non-invocation assertions.
-3. Begin Phase 4 audit logging implementation after Phase 3 completion.
+1. Execute `.planning/phases/04-audit/04-01-PLAN.md`.
+2. Implement audit logging capture for request identity, tool metadata, and policy outcomes.
+3. Continue progressing remaining plans toward Phase 5 demo submission readiness.
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-13T06:09:46Z
-- Stopped at: Completed 03-03-PLAN.md
-- Resume file: `.planning/phases/03-authz-rate-limit/03-04-PLAN.md`
+- Last session: 2026-02-13T06:18:55Z
+- Stopped at: Completed 03-04-PLAN.md
+- Resume file: `.planning/phases/04-audit/04-01-PLAN.md`
 
 ---
 
