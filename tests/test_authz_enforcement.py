@@ -12,6 +12,7 @@ from mcp.shared.exceptions import McpError
 from mcp_sentinel.middleware import auth as auth_middleware
 from mcp_sentinel.policy.models import Policy
 from mcp_sentinel.proxy.sentinel_server import create_sentinel_server
+from mcp_sentinel.ratelimit import limiter as limiter_module
 
 RequestType = TypeVar("RequestType")
 
@@ -95,6 +96,19 @@ class FakeUpstreamConnector:
 @pytest.fixture
 def connector() -> FakeUpstreamConnector:
     return FakeUpstreamConnector()
+
+
+@pytest.fixture(autouse=True)
+def patch_rate_limit_eval(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def fake_eval(
+        _script: str,
+        keys: list[str] | None = None,
+        args: list[str | bytes | int | float] | None = None,
+    ) -> int:
+        _ = (keys, args)
+        return 1
+
+    monkeypatch.setattr(limiter_module, "redis_eval", fake_eval)
 
 
 @pytest.fixture
