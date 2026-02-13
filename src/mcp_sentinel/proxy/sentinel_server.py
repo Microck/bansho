@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import sys
 from typing import Any
 
 import mcp.types as types
-import structlog
 from mcp.server.lowlevel import Server
 from mcp.server.models import InitializationOptions
 from mcp.server.stdio import stdio_server
@@ -56,7 +56,6 @@ def _upstream_target(settings: Settings) -> str:
 async def run_stdio_proxy(settings: Settings | None = None) -> None:
     resolved_settings = settings or Settings()
     connector = UpstreamConnector(resolved_settings)
-    log = structlog.get_logger("mcp-sentinel.proxy")
 
     try:
         upstream_init = await connector.initialize()
@@ -69,13 +68,13 @@ async def run_stdio_proxy(settings: Settings | None = None) -> None:
             instructions=upstream_init.instructions,
         )
 
-        log.info(
-            "sentinel_proxy_start",
-            listen_addr=(
-                f"{resolved_settings.sentinel_listen_host}:{resolved_settings.sentinel_listen_port}"
-            ),
-            upstream_transport=resolved_settings.upstream_transport,
-            upstream_target=_upstream_target(resolved_settings),
+        print(
+            "sentinel_proxy_start"
+            f" listen_addr={resolved_settings.sentinel_listen_host}:{resolved_settings.sentinel_listen_port}"
+            f" upstream_transport={resolved_settings.upstream_transport}"
+            f" upstream_target={_upstream_target(resolved_settings)}",
+            file=sys.stderr,
+            flush=True,
         )
 
         async with stdio_server() as (read_stream, write_stream):
