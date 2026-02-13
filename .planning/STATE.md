@@ -55,7 +55,7 @@ Progress: ████████░░░░░░░░ 8/16 plans (50%)
 
 ## Blockers/Concerns Carried Forward
 
-- None. Ready for 03-03 policy-driven rate limiting work.
+- None. Ready for 03-04 pipeline ordering and bypass-prevention work.
 
 ---
 
