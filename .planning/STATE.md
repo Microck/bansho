@@ -3,10 +3,10 @@
 ## Current Position
 
 Phase: 2 of 5 (Authentication)
-Plan: 1 of 3
+Plan: 2 of 3
 Status: In progress
-Last activity: 2026-02-13 - Completed 02-01-PLAN.md
-Progress: ████░░░░░░░░░░░░ 4/16 plans (25%)
+Last activity: 2026-02-13 - Completed 02-02-PLAN.md
+Progress: █████░░░░░░░░░░░ 5/16 plans (31%)
 
 ---
 
@@ -15,7 +15,7 @@ Progress: ████░░░░░░░░░░░░ 4/16 plans (25%)
 | Phase | Name | Status | Progress |
 |-------|------|--------|----------|
 | 1 | Foundation | Complete | 3/3 plans |
-| 2 | Authentication | In Progress | 1/3 plans |
+| 2 | Authentication | In Progress | 2/3 plans |
 | 3 | Authorization & Rate Limiting | Not Started | 0/4 plans |
 | 4 | Audit | Not Started | 0/3 plans |
 | 5 | Demo & Submit | Not Started | 0/3 plans |
@@ -38,12 +38,15 @@ Progress: ████░░░░░░░░░░░░ 4/16 plans (25%)
 | 02-01 | Use PBKDF2-SHA256 (stdlib) with per-key salt for API key storage | Keep hashes non-reversible without introducing new crypto dependencies |
 | 02-01 | Encode stored hashes as `scheme$iterations$salt$digest` | Preserve algorithm metadata for deterministic future verification and migrations |
 | 02-01 | Default blank API key role values to `readonly` | Maintain deny-by-default posture for newly issued keys |
+| 02-02 | Enforce auth only on `tools/list` and `tools/call` in this plan | Satisfy AUTH-03/04 while preserving existing non-tool passthrough behavior |
+| 02-02 | Read credentials from request context metadata and HTTP request objects | Keep auth extraction compatible across stdio and HTTP transports |
+| 02-02 | Return generic `Unauthorized` MCP errors without key details | Prevent sensitive credential leakage in error responses |
 
 ---
 
 ## Blockers/Concerns Carried Forward
 
-- None. Ready to continue Phase 02 authentication work.
+- None. Ready to finish remaining Phase 02 authentication plan.
 
 ---
 
@@ -51,6 +54,7 @@ Progress: ████░░░░░░░░░░░░ 4/16 plans (25%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-13 | Completed 02-02 auth middleware + sentinel tool auth enforcement with header/query credential tests |
 | 2026-02-13 | Completed 02-01 API key hashing + Postgres key CRUD primitives with lifecycle verification |
 | 2026-02-13 | Completed 01-03 MCP passthrough proxy and end-to-end forwarding regression test |
 | 2026-02-13 | Completed 01-02 storage layer (Redis wrapper, Postgres schema bootstrap, smoke check) |
@@ -61,17 +65,17 @@ Progress: ████░░░░░░░░░░░░ 4/16 plans (25%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/02-authentication/02-02-PLAN.md`.
-2. Layer API key authentication checks into Sentinel proxy request handling.
-3. Add API key extraction from headers/query params and return 401 on missing/invalid keys.
+1. Execute `.planning/phases/02-authentication/02-03-PLAN.md`.
+2. Complete any remaining authentication deliverables and close Phase 02.
+3. Prepare transition inputs for Phase 03 authorization and rate limiting work.
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-13T04:13:26Z
-- Stopped at: Completed 02-01-PLAN.md
-- Resume file: `.planning/phases/02-authentication/02-02-PLAN.md`
+- Last session: 2026-02-13T04:24:56Z
+- Stopped at: Completed 02-02-PLAN.md
+- Resume file: `.planning/phases/02-authentication/02-03-PLAN.md`
 
 ---
 
