@@ -2,11 +2,11 @@
 
 ## Current Position
 
-Phase: 2 of 5 (Authentication)
-Plan: 2 of 3
+Phase: 3 of 5 (Authorization & Rate Limiting)
+Plan: 1 of 4
 Status: In progress
-Last activity: 2026-02-13 - Completed 02-02-PLAN.md
-Progress: █████░░░░░░░░░░░ 5/16 plans (31%)
+Last activity: 2026-02-13 - Completed 03-01-PLAN.md
+Progress: ██████░░░░░░░░░░ 6/16 plans (38%)
 
 ---
 
@@ -16,7 +16,7 @@ Progress: █████░░░░░░░░░░░ 5/16 plans (31%)
 |-------|------|--------|----------|
 | 1 | Foundation | Complete | 3/3 plans |
 | 2 | Authentication | In Progress | 2/3 plans |
-| 3 | Authorization & Rate Limiting | Not Started | 0/4 plans |
+| 3 | Authorization & Rate Limiting | In Progress | 1/4 plans |
 | 4 | Audit | Not Started | 0/3 plans |
 | 5 | Demo & Submit | Not Started | 0/3 plans |
 
@@ -41,12 +41,15 @@ Progress: █████░░░░░░░░░░░ 5/16 plans (31%)
 | 02-02 | Enforce auth only on `tools/list` and `tools/call` in this plan | Satisfy AUTH-03/04 while preserving existing non-tool passthrough behavior |
 | 02-02 | Read credentials from request context metadata and HTTP request objects | Keep auth extraction compatible across stdio and HTTP transports |
 | 02-02 | Return generic `Unauthorized` MCP errors without key details | Prevent sensitive credential leakage in error responses |
+| 03-01 | Model policies with explicit `admin`, `user`, and `readonly` role keys | Keep authorization behavior predictable and avoid drifting dynamic role maps |
+| 03-01 | Support wildcard tool access via `*` for admin policies only | Preserve explicit allow-list semantics while keeping non-admin roles deny-by-default |
+| 03-01 | Fail closed on missing/invalid policy files via `PolicyLoadError` | Prevent Sentinel from starting without a trusted policy source |
 
 ---
 
 ## Blockers/Concerns Carried Forward
 
-- None. Ready to finish remaining Phase 02 authentication plan.
+- None. Ready for 03-02 policy evaluation and authorization enforcement work.
 
 ---
 
@@ -54,6 +57,7 @@ Progress: █████░░░░░░░░░░░ 5/16 plans (31%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-13 | Completed 03-01 policy schema/loader foundation with default deny-first YAML configuration |
 | 2026-02-13 | Completed 02-02 auth middleware + sentinel tool auth enforcement with header/query credential tests |
 | 2026-02-13 | Completed 02-01 API key hashing + Postgres key CRUD primitives with lifecycle verification |
 | 2026-02-13 | Completed 01-03 MCP passthrough proxy and end-to-end forwarding regression test |
@@ -65,17 +69,17 @@ Progress: █████░░░░░░░░░░░ 5/16 plans (31%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/02-authentication/02-03-PLAN.md`.
-2. Complete any remaining authentication deliverables and close Phase 02.
-3. Prepare transition inputs for Phase 03 authorization and rate limiting work.
+1. Execute `.planning/phases/03-authz-rate-limit/03-02-PLAN.md`.
+2. Add runtime policy evaluation to enforce tool authorization decisions.
+3. Integrate policy-driven rate limiting middleware into request handling.
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-13T04:24:56Z
-- Stopped at: Completed 02-02-PLAN.md
-- Resume file: `.planning/phases/02-authentication/02-03-PLAN.md`
+- Last session: 2026-02-13T05:47:44Z
+- Stopped at: Completed 03-01-PLAN.md
+- Resume file: `.planning/phases/03-authz-rate-limit/03-02-PLAN.md`
 
 ---
 
