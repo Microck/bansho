@@ -4,12 +4,17 @@ import argparse
 
 import structlog
 
+from mcp_sentinel import __version__
 from mcp_sentinel.config import Settings
 from mcp_sentinel.logging import configure_logging
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="mcp-sentinel", add_help=True)
+    parser = argparse.ArgumentParser(
+        prog="mcp-sentinel",
+        description="ToolchainGate scaffold entrypoint (configuration + logging only).",
+    )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument(
         "--print-settings", action="store_true", help="Print resolved settings and exit"
     )
@@ -25,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     log = structlog.get_logger("mcp-sentinel")
 
     if args.print_settings:
-        print(settings.model_dump())
+        print(settings.model_dump_json(indent=2))
         return 0
 
     log.info(
@@ -34,5 +39,8 @@ def main(argv: list[str] | None = None) -> int:
         listen_port=settings.sentinel_listen_port,
         upstream_transport=settings.upstream_transport,
     )
-    print("mcp-sentinel-lite: scaffold complete (proxy logic not implemented yet)")
+    print(
+        "mcp-sentinel-lite scaffold ready: config + logging loaded "
+        "(proxy logic not implemented yet)."
+    )
     return 0

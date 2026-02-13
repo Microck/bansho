@@ -8,19 +8,24 @@ version = "0.1.0"
 description = "Security gateway for the Model Context Protocol (MCP)"
 requires-python = ">=3.11"
 dependencies = [
-  "asyncpg",
-  "httpx",
-  "mcp",
+  "asyncpg>=0.31.0",
+  "httpx>=0.28.0",
+  "mcp>=1.26.0",
   "pydantic>=2",
-  "pydantic-settings",
-  "pyyaml",
-  "redis",
-  "structlog",
+  "pydantic-settings>=2.11.0",
+  "pyyaml>=6.0.0",
+  "redis>=6.4.0",
+  "structlog>=25.4.0",
+]
 
-  # Tooling (kept simple for hackathon execution)
-  "mypy",
-  "pytest",
-  "ruff",
+[project.scripts]
+mcp-sentinel = "mcp_sentinel.main:main"
+
+[dependency-groups]
+dev = [
+  "mypy>=1.19.0",
+  "pytest>=9.0.0",
+  "ruff>=0.15.0",
 ]
 
 [tool.ruff]
@@ -28,17 +33,15 @@ target-version = "py311"
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "I"]
+select = ["E", "F", "I", "UP"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-q"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.mypy]
 python_version = "3.11"
-warn_unused_ignores = true
-warn_redundant_casts = true
-no_implicit_optional = true
-check_untyped_defs = true
+strict = true
