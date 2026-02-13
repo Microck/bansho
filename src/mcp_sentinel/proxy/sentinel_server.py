@@ -11,8 +11,9 @@ from mcp.server.stdio import stdio_server
 from mcp.shared.exceptions import McpError
 
 from mcp_sentinel.config import Settings
-from mcp_sentinel.middleware import AuthContext, require_api_key
+from mcp_sentinel.middleware import AuthContext, authenticate_request
 from mcp_sentinel.middleware.authz import authorize_tool
+from mcp_sentinel.middleware.rate_limit import enforce_rate_limit
 from mcp_sentinel.policy.loader import DEFAULT_POLICY_PATH, load_policy
 from mcp_sentinel.policy.models import Policy
 from mcp_sentinel.proxy.upstream import UpstreamConnector
@@ -24,10 +25,8 @@ _FORBIDDEN_ERROR = types.ErrorData(code=403, message="Forbidden")
 def create_sentinel_server(connector: UpstreamConnector, *, policy: Policy) -> Server[Any, Any]:
     server = Server("mcp-sentinel-lite")
 
-    async def handle_list_tools(
-        req: types.ListToolsRequest,
-        auth_context: AuthContext,
-    ) -> types.ServerResult:
+    async def handle_list_tools(req: types.ListToolsRequest) -> types.ServerResult:
+        auth_context = await _authenticate(server)
         listed_tools = await connector.list_tools(req.params)
         filtered_tools = [
             tool
@@ -36,16 +35,15 @@ def create_sentinel_server(connector: UpstreamConnector, *, policy: Policy) -> S
         ]
         return types.ServerResult(listed_tools.model_copy(update={"tools": filtered_tools}))
 
-    async def handle_call_tool(
-        req: types.CallToolRequest,
-        auth_context: AuthContext,
-    ) -> types.ServerResult:
-        decision = authorize_tool(policy, auth_context, req.params.name)
-        if not decision.allowed:
-            raise McpError(_FORBIDDEN_ERROR)
+    async def handle_call_tool(req: types.CallToolRequest) -> types.ServerResult:
+        auth_context = await _authenticate(server)
+        tool_name = req.params.name
+
+        _authorize_or_raise(policy, auth_context, tool_name)
+        await enforce_rate_limit(policy, auth_context, tool_name)
 
         return types.ServerResult(
-            await connector.call_tool(name=req.params.name, arguments=req.params.arguments)
+            await connector.call_tool(name=tool_name, arguments=req.params.arguments)
         )
 
     async def handle_list_resources(req: types.ListResourcesRequest) -> types.ServerResult:
@@ -62,14 +60,31 @@ def create_sentinel_server(connector: UpstreamConnector, *, policy: Policy) -> S
             await connector.get_prompt(name=req.params.name, arguments=req.params.arguments)
         )
 
-    server.request_handlers[types.ListToolsRequest] = require_api_key(server, handle_list_tools)
-    server.request_handlers[types.CallToolRequest] = require_api_key(server, handle_call_tool)
+    server.request_handlers[types.ListToolsRequest] = handle_list_tools
+    server.request_handlers[types.CallToolRequest] = handle_call_tool
     server.request_handlers[types.ListResourcesRequest] = handle_list_resources
     server.request_handlers[types.ReadResourceRequest] = handle_read_resource
     server.request_handlers[types.ListPromptsRequest] = handle_list_prompts
     server.request_handlers[types.GetPromptRequest] = handle_get_prompt
 
     return server
+
+
+async def _authenticate(server: Server[Any, Any]) -> AuthContext:
+    return await authenticate_request(_request_context(server))
+
+
+def _request_context(server: Server[Any, Any]) -> Any | None:
+    try:
+        return server.request_context
+    except LookupError:
+        return None
+
+
+def _authorize_or_raise(policy: Policy, auth_context: AuthContext, tool_name: str) -> None:
+    decision = authorize_tool(policy, auth_context, tool_name)
+    if not decision.allowed:
+        raise McpError(_FORBIDDEN_ERROR)
 
 
 def _upstream_target(settings: Settings) -> str:
