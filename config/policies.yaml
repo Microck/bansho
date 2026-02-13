@@ -1,0 +1,21 @@
+roles:
+  admin:
+    allow:
+      - "*"
+  user:
+    allow: []
+  readonly:
+    allow: []
+
+rate_limits:
+  per_api_key:
+    requests: 120
+    window_seconds: 60
+  per_tool:
+    default:
+      requests: 30
+      window_seconds: 60
+    overrides:
+      tools/call:
+        requests: 20
+        window_seconds: 60
