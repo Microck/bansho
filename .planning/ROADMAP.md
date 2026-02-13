@@ -42,7 +42,7 @@ Security gateway for the Model Context Protocol (MCP) that adds authentication, 
 
 **Duration:** ~1 week
 
-**Status:** In Progress (Plans 02-01 and 02-02 complete on 2026-02-13)
+**Status:** Complete (Plans 02-01 through 02-03 completed on 2026-02-13)
 
 **Requirements Covered:**
 - AUTH-01: API key validation middleware
@@ -62,6 +62,8 @@ Security gateway for the Model Context Protocol (MCP) that adds authentication, 
 - `src/mcp_sentinel/middleware/auth.py` (completed in 02-02)
 - `src/mcp_sentinel/proxy/sentinel_server.py` (auth enforcement added in 02-02)
 - `tests/test_auth_enforcement.py` (completed in 02-02)
+- `src/mcp_sentinel/cli/keys.py` (completed in 02-03)
+- `src/mcp_sentinel/main.py` (serve/keys command routing added in 02-03)
 
 ---
 

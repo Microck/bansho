@@ -5,8 +5,8 @@
 Phase: 3 of 5 (Authorization & Rate Limiting)
 Plan: 4 of 4
 Status: Phase complete
-Last activity: 2026-02-13 - Completed 03-04-PLAN.md
-Progress: █████████░░░░░░░ 9/16 plans (56%)
+Last activity: 2026-02-13 - Completed 02-03-PLAN.md
+Progress: ██████████░░░░░░ 10/16 plans (63%)
 
 ---
 
@@ -15,7 +15,7 @@ Progress: █████████░░░░░░░ 9/16 plans (56%)
 | Phase | Name | Status | Progress |
 |-------|------|--------|----------|
 | 1 | Foundation | Complete | 3/3 plans |
-| 2 | Authentication | In Progress | 2/3 plans |
+| 2 | Authentication | Complete | 3/3 plans |
 | 3 | Authorization & Rate Limiting | Complete | 4/4 plans |
 | 4 | Audit | Not Started | 0/3 plans |
 | 5 | Demo & Submit | Not Started | 0/3 plans |
@@ -41,6 +41,9 @@ Progress: █████████░░░░░░░ 9/16 plans (56%)
 | 02-02 | Enforce auth only on `tools/list` and `tools/call` in this plan | Satisfy AUTH-03/04 while preserving existing non-tool passthrough behavior |
 | 02-02 | Read credentials from request context metadata and HTTP request objects | Keep auth extraction compatible across stdio and HTTP transports |
 | 02-02 | Return generic `Unauthorized` MCP errors without key details | Prevent sensitive credential leakage in error responses |
+| 02-03 | Build key lifecycle commands with stdlib `argparse` (`create`, `list`, `revoke`) | Keep operator workflow dependency-light and easy for demo environments |
+| 02-03 | Limit CLI key visibility to one-time creation output plus non-secret listing metadata | Prevent accidental key/hash disclosure while preserving operational usability |
+| 02-03 | Bootstrap schema and close Postgres pool within each keys command invocation | Keep local/demo CLI execution reliable without manual database prep/cleanup |
 | 03-01 | Model policies with explicit `admin`, `user`, and `readonly` role keys | Keep authorization behavior predictable and avoid drifting dynamic role maps |
 | 03-01 | Support wildcard tool access via `*` for admin policies only | Preserve explicit allow-list semantics while keeping non-admin roles deny-by-default |
 | 03-01 | Fail closed on missing/invalid policy files via `PolicyLoadError` | Prevent Sentinel from starting without a trusted policy source |
@@ -66,6 +69,7 @@ Progress: █████████░░░░░░░ 9/16 plans (56%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-13 | Completed 02-03 operator API key CLI (`keys create/list/revoke`) and entrypoint command routing |
 | 2026-02-13 | Completed 03-04 explicit auth->authz->rate-limit proxy pipeline wiring with bypass-prevention E2E coverage |
 | 2026-02-13 | Completed 03-03 Redis-backed fixed-window limiter, policy middleware, and 429/reset regression coverage |
 | 2026-02-13 | Completed 03-02 tool-level authorization middleware/wiring with role matrix regression coverage |
@@ -89,8 +93,8 @@ Progress: █████████░░░░░░░ 9/16 plans (56%)
 
 ## Session Continuity
 
-- Last session: 2026-02-13T06:18:55Z
-- Stopped at: Completed 03-04-PLAN.md
+- Last session: 2026-02-13T20:50:57Z
+- Stopped at: Completed 02-03-PLAN.md
 - Resume file: `.planning/phases/04-audit/04-01-PLAN.md`
 
 ---
