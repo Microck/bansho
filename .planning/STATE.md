@@ -3,10 +3,10 @@
 ## Current Position
 
 Phase: 3 of 5 (Authorization & Rate Limiting)
-Plan: 2 of 4
+Plan: 3 of 4
 Status: In progress
-Last activity: 2026-02-13 - Completed 03-02-PLAN.md
-Progress: ███████░░░░░░░░░ 7/16 plans (44%)
+Last activity: 2026-02-13 - Completed 03-03-PLAN.md
+Progress: ████████░░░░░░░░ 8/16 plans (50%)
 
 ---
 
@@ -16,7 +16,7 @@ Progress: ███████░░░░░░░░░ 7/16 plans (44%)
 |-------|------|--------|----------|
 | 1 | Foundation | Complete | 3/3 plans |
 | 2 | Authentication | In Progress | 2/3 plans |
-| 3 | Authorization & Rate Limiting | In Progress | 2/4 plans |
+| 3 | Authorization & Rate Limiting | In Progress | 3/4 plans |
 | 4 | Audit | Not Started | 0/3 plans |
 | 5 | Demo & Submit | Not Started | 0/3 plans |
 
@@ -47,6 +47,9 @@ Progress: ███████░░░░░░░░░ 7/16 plans (44%)
 | 03-02 | Return structured authorization decisions (`allowed`, `reason`, `matched_rule`) from middleware | Prepare policy evaluations for future audit and observability without re-parsing handler state |
 | 03-02 | Enforce authz for both `tools/call` and `tools/list` filtering | Reduce sensitive tool discovery while keeping invocation checks non-bypassable |
 | 03-02 | Resolve startup policy path via `SENTINEL_POLICY_PATH` with `config/policies.yaml` fallback | Keep runtime policy selection configurable while preserving fail-closed startup behavior |
+| 03-03 | Use fixed-window Redis keys bucketed by epoch window for per-key and per-tool counters | Keep limiter deterministic while avoiding additional TTL lookups |
+| 03-03 | Enforce both per-api-key and per-tool quotas, denying on first exceeded dimension | Preserve strict abuse controls while minimizing unnecessary limiter operations |
+| 03-03 | Apply conservative fallback limits when policy rate-limit config is missing | Avoid accidental rate-limit disablement in partial/misconfigured policy scenarios |
 
 ---
 
@@ -60,6 +63,7 @@ Progress: ███████░░░░░░░░░ 7/16 plans (44%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-13 | Completed 03-03 Redis-backed fixed-window limiter, policy middleware, and 429/reset regression coverage |
 | 2026-02-13 | Completed 03-02 tool-level authorization middleware/wiring with role matrix regression coverage |
 | 2026-02-13 | Completed 03-01 policy schema/loader foundation with default deny-first YAML configuration |
 | 2026-02-13 | Completed 02-02 auth middleware + sentinel tool auth enforcement with header/query credential tests |
@@ -73,17 +77,17 @@ Progress: ███████░░░░░░░░░ 7/16 plans (44%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/03-authz-rate-limit/03-03-PLAN.md`.
-2. Implement Redis-backed per-key and per-tool rate limiting middleware.
-3. Add end-to-end pipeline ordering coverage in 03-04 (`auth -> authz -> rate limit`).
+1. Execute `.planning/phases/03-authz-rate-limit/03-04-PLAN.md`.
+2. Add explicit proxy pipeline ordering coverage (`auth -> authz -> rate limit`) with upstream non-invocation assertions.
+3. Begin Phase 4 audit logging implementation after Phase 3 completion.
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-13T05:57:59Z
-- Stopped at: Completed 03-02-PLAN.md
-- Resume file: `.planning/phases/03-authz-rate-limit/03-03-PLAN.md`
+- Last session: 2026-02-13T06:09:46Z
+- Stopped at: Completed 03-03-PLAN.md
+- Resume file: `.planning/phases/03-authz-rate-limit/03-04-PLAN.md`
 
 ---
 
