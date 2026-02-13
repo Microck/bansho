@@ -117,16 +117,51 @@ if __name__ == "__main__":
     anyio.run(run)
 """
 
+FAKE_SENTINEL_SERVER = """
+from __future__ import annotations
+
+import anyio
+
+import mcp_sentinel.middleware.auth as auth_middleware
+from mcp_sentinel.config import Settings
+from mcp_sentinel.proxy.sentinel_server import run_stdio_proxy
+
+TEST_API_KEY = "integration-test-key"
+
+
+async def fake_resolve_api_key(presented_key: str) -> dict[str, str] | None:
+    if presented_key != TEST_API_KEY:
+        return None
+
+    return {
+        "api_key_id": "integration-key-id",
+        "role": "readonly",
+    }
+
+
+auth_middleware.resolve_api_key = fake_resolve_api_key
+
+
+if __name__ == "__main__":
+    anyio.run(run_stdio_proxy, Settings())
+"""
+
 
 @pytest.mark.anyio
 async def test_passthrough_tools_resources_and_prompts(tmp_path: Path) -> None:
     project_root = Path(__file__).resolve().parents[1]
     upstream_script = tmp_path / "fake_upstream.py"
+    sentinel_script = tmp_path / "fake_sentinel.py"
     upstream_script.write_text(textwrap.dedent(FAKE_UPSTREAM_SERVER), encoding="utf-8")
+    sentinel_script.write_text(textwrap.dedent(FAKE_SENTINEL_SERVER), encoding="utf-8")
+
+    auth_meta = types.RequestParams.Meta.model_validate(
+        {"headers": {"X-API-Key": "integration-test-key"}}
+    )
 
     sentinel_process = StdioServerParameters(
         command="uv",
-        args=["run", "python", "-m", "mcp_sentinel"],
+        args=["run", "python", str(sentinel_script)],
         cwd=project_root,
         env={
             "UPSTREAM_TRANSPORT": "stdio",
@@ -143,10 +178,23 @@ async def test_passthrough_tools_resources_and_prompts(tmp_path: Path) -> None:
             assert initialize_result.capabilities.resources is not None
             assert initialize_result.capabilities.prompts is not None
 
-            tools_result = await session.list_tools()
+            tools_result = await session.list_tools(
+                params=types.PaginatedRequestParams(_meta=auth_meta)
+            )
             assert {tool.name for tool in tools_result.tools} == {"echo"}
 
-            tool_result = await session.call_tool("echo", {"text": "hello"})
+            tool_result = await session.send_request(
+                types.ClientRequest(
+                    types.CallToolRequest(
+                        params=types.CallToolRequestParams(
+                            name="echo",
+                            arguments={"text": "hello"},
+                            _meta=auth_meta,
+                        )
+                    )
+                ),
+                types.CallToolResult,
+            )
             assert tool_result.isError is False
             assert len(tool_result.content) == 1
             assert isinstance(tool_result.content[0], types.TextContent)
