@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from asyncpg import Pool
 
+from mcp_sentinel.storage.postgres import get_postgres_pool
+from mcp_sentinel.storage.redis import ping_redis
+
 SCHEMA_STATEMENTS: tuple[str, ...] = (
     """
     CREATE TABLE IF NOT EXISTS api_keys (
@@ -32,3 +35,25 @@ async def bootstrap_schema(pool: Pool) -> None:
     async with pool.acquire() as connection:
         for statement in SCHEMA_STATEMENTS:
             await connection.execute(statement)
+
+
+async def storage_smoke_check() -> dict[str, bool]:
+    redis_ok = False
+    postgres_ok = False
+
+    try:
+        redis_ok = await ping_redis()
+    except Exception:
+        redis_ok = False
+
+    try:
+        pool = await get_postgres_pool()
+        async with pool.acquire() as connection:
+            postgres_ok = await connection.fetchval("SELECT 1;") == 1
+    except Exception:
+        postgres_ok = False
+
+    return {
+        "redis": redis_ok,
+        "postgres": postgres_ok,
+    }
