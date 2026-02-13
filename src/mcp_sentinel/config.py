@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     upstream_url: str = Field(default="", validation_alias="UPSTREAM_URL")
 
     postgres_dsn: PostgresDsn = Field(
-        default=cast(PostgresDsn, "postgresql://sentinel:sentinel@127.0.0.1:5432/mcp_sentinel"),
+        default=cast(PostgresDsn, "postgresql://sentinel:sentinel@127.0.0.1:5433/mcp_sentinel"),
         validation_alias="POSTGRES_DSN",
     )
     redis_url: RedisDsn = Field(

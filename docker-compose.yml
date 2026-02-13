@@ -1,29 +1,35 @@
+name: mcp-sentinel-local
+
 services:
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     ports:
       - "127.0.0.1:6379:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 2s
-      timeout: 2s
+      test: ["CMD", "redis-cli", "--raw", "ping"]
+      interval: 5s
+      timeout: 3s
       retries: 20
+      start_period: 5s
 
   postgres:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: sentinel
       POSTGRES_PASSWORD: sentinel
       POSTGRES_DB: mcp_sentinel
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sentinel -d mcp_sentinel"]
-      interval: 2s
-      timeout: 2s
-      retries: 25
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U sentinel -d mcp_sentinel"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
 
 volumes:
   postgres_data:
