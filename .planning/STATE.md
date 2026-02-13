@@ -3,10 +3,10 @@
 ## Current Position
 
 Phase: 3 of 5 (Authorization & Rate Limiting)
-Plan: 1 of 4
+Plan: 2 of 4
 Status: In progress
-Last activity: 2026-02-13 - Completed 03-01-PLAN.md
-Progress: ██████░░░░░░░░░░ 6/16 plans (38%)
+Last activity: 2026-02-13 - Completed 03-02-PLAN.md
+Progress: ███████░░░░░░░░░ 7/16 plans (44%)
 
 ---
 
@@ -16,7 +16,7 @@ Progress: ██████░░░░░░░░░░ 6/16 plans (38%)
 |-------|------|--------|----------|
 | 1 | Foundation | Complete | 3/3 plans |
 | 2 | Authentication | In Progress | 2/3 plans |
-| 3 | Authorization & Rate Limiting | In Progress | 1/4 plans |
+| 3 | Authorization & Rate Limiting | In Progress | 2/4 plans |
 | 4 | Audit | Not Started | 0/3 plans |
 | 5 | Demo & Submit | Not Started | 0/3 plans |
 
@@ -44,12 +44,15 @@ Progress: ██████░░░░░░░░░░ 6/16 plans (38%)
 | 03-01 | Model policies with explicit `admin`, `user`, and `readonly` role keys | Keep authorization behavior predictable and avoid drifting dynamic role maps |
 | 03-01 | Support wildcard tool access via `*` for admin policies only | Preserve explicit allow-list semantics while keeping non-admin roles deny-by-default |
 | 03-01 | Fail closed on missing/invalid policy files via `PolicyLoadError` | Prevent Sentinel from starting without a trusted policy source |
+| 03-02 | Return structured authorization decisions (`allowed`, `reason`, `matched_rule`) from middleware | Prepare policy evaluations for future audit and observability without re-parsing handler state |
+| 03-02 | Enforce authz for both `tools/call` and `tools/list` filtering | Reduce sensitive tool discovery while keeping invocation checks non-bypassable |
+| 03-02 | Resolve startup policy path via `SENTINEL_POLICY_PATH` with `config/policies.yaml` fallback | Keep runtime policy selection configurable while preserving fail-closed startup behavior |
 
 ---
 
 ## Blockers/Concerns Carried Forward
 
-- None. Ready for 03-02 policy evaluation and authorization enforcement work.
+- None. Ready for 03-03 policy-driven rate limiting work.
 
 ---
 
@@ -57,6 +60,7 @@ Progress: ██████░░░░░░░░░░ 6/16 plans (38%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-13 | Completed 03-02 tool-level authorization middleware/wiring with role matrix regression coverage |
 | 2026-02-13 | Completed 03-01 policy schema/loader foundation with default deny-first YAML configuration |
 | 2026-02-13 | Completed 02-02 auth middleware + sentinel tool auth enforcement with header/query credential tests |
 | 2026-02-13 | Completed 02-01 API key hashing + Postgres key CRUD primitives with lifecycle verification |
@@ -69,17 +73,17 @@ Progress: ██████░░░░░░░░░░ 6/16 plans (38%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/03-authz-rate-limit/03-02-PLAN.md`.
-2. Add runtime policy evaluation to enforce tool authorization decisions.
-3. Integrate policy-driven rate limiting middleware into request handling.
+1. Execute `.planning/phases/03-authz-rate-limit/03-03-PLAN.md`.
+2. Implement Redis-backed per-key and per-tool rate limiting middleware.
+3. Add end-to-end pipeline ordering coverage in 03-04 (`auth -> authz -> rate limit`).
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-13T05:47:44Z
-- Stopped at: Completed 03-01-PLAN.md
-- Resume file: `.planning/phases/03-authz-rate-limit/03-02-PLAN.md`
+- Last session: 2026-02-13T05:57:59Z
+- Stopped at: Completed 03-02-PLAN.md
+- Resume file: `.planning/phases/03-authz-rate-limit/03-03-PLAN.md`
 
 ---
 

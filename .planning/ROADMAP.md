@@ -71,7 +71,7 @@ Security gateway for the Model Context Protocol (MCP) that adds authentication, 
 
 **Duration:** ~1 week
 
-**Status:** In Progress (Plan 03-01 completed on 2026-02-13)
+**Status:** In Progress (Plans 03-01 and 03-02 completed on 2026-02-13)
 
 **Requirements Covered:**
 - AUTHZ-01: YAML-based policy configuration
