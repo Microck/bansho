@@ -33,12 +33,12 @@ After completing setup, verify with:
 ```bash
 docker compose up -d redis postgres
 docker compose ps
-uv run python -m mcp_sentinel --print-settings
+uv run python -m bansho --print-settings
 ```
 
 Expected results:
 - Redis and Postgres are running with healthy status.
-- `postgres_dsn` resolves to `postgresql://sentinel:sentinel@127.0.0.1:5433/mcp_sentinel`.
+- `postgres_dsn` resolves to `postgresql://bansho:bansho@127.0.0.1:5433/bansho`.
 - `redis_url` resolves to `redis://127.0.0.1:6379/0`.
 
 ---

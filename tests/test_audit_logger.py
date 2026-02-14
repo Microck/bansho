@@ -7,9 +7,9 @@ from uuid import UUID
 
 import pytest
 
-import mcp_sentinel.audit.logger as audit_logger_module
-from mcp_sentinel.audit.logger import AuditLogger
-from mcp_sentinel.audit.models import AuditEvent
+import bansho.audit.logger as audit_logger_module
+from bansho.audit.logger import AuditLogger
+from bansho.audit.models import AuditEvent
 
 
 class FakeConnection:
@@ -57,7 +57,7 @@ async def test_audit_logger_inserts_redacted_event_payload() -> None:
         method="tools/call",
         tool_name="public.echo",
         request_json={
-            "api_key": "sentinel-secret-key",
+            "api_key": "bansho-secret-key",
             "arguments": {"text": "hello"},
         },
         response_json={"result": "ok"},

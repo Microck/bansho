@@ -21,9 +21,9 @@ tech-stack:
 
 key-files:
   created:
-    - src/mcp_sentinel/policy/models.py
-    - src/mcp_sentinel/policy/__init__.py
-    - src/mcp_sentinel/policy/loader.py
+    - src/bansho/policy/models.py
+    - src/bansho/policy/__init__.py
+    - src/bansho/policy/loader.py
     - config/policies.yaml
     - tests/test_policy_loader.py
   modified: []
@@ -43,7 +43,7 @@ completed: 2026-02-13
 
 # Phase 3 Plan 01: Policy Schema and Loader Summary
 
-**Sentinel now has a validated YAML policy source with role allow-lists and per-key/per-tool rate limits that fail closed when policy data is missing or malformed.**
+**Bansho now has a validated YAML policy source with role allow-lists and per-key/per-tool rate limits that fail closed when policy data is missing or malformed.**
 
 ## Performance
 
@@ -71,9 +71,9 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `src/mcp_sentinel/policy/models.py` - Pydantic schema for role allow-lists and rate limit policy.
-- `src/mcp_sentinel/policy/__init__.py` - Public exports for policy schema models.
-- `src/mcp_sentinel/policy/loader.py` - Safe YAML policy loading with fail-closed validation.
+- `src/bansho/policy/models.py` - Pydantic schema for role allow-lists and rate limit policy.
+- `src/bansho/policy/__init__.py` - Public exports for policy schema models.
+- `src/bansho/policy/loader.py` - Safe YAML policy loading with fail-closed validation.
 - `tests/test_policy_loader.py` - Unit coverage for valid load, schema rejection, and missing-file rejection.
 - `config/policies.yaml` - Starter policy with deny-by-default user/readonly roles and conservative limits.
 

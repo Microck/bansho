@@ -21,12 +21,12 @@ tech-stack:
 
 key-files:
   created:
-    - src/mcp_sentinel/audit/models.py
-    - src/mcp_sentinel/audit/logger.py
-    - src/mcp_sentinel/audit/__init__.py
+    - src/bansho/audit/models.py
+    - src/bansho/audit/logger.py
+    - src/bansho/audit/__init__.py
     - tests/test_audit_logger.py
   modified:
-    - src/mcp_sentinel/storage/schema.py
+    - src/bansho/storage/schema.py
 
 key-decisions:
   - "Normalize audit payloads through model validators with key-based redaction and byte bounding before DB writes."
@@ -43,7 +43,7 @@ completed: 2026-02-14
 
 # Phase 4 Plan 01: Audit Primitives Summary
 
-**Sentinel now has an auditable event model plus a Postgres logger that persists timestamped tool-request outcomes with bounded, redacted JSON metadata.**
+**Bansho now has an auditable event model plus a Postgres logger that persists timestamped tool-request outcomes with bounded, redacted JSON metadata.**
 
 ## Performance
 
@@ -70,11 +70,11 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `src/mcp_sentinel/audit/models.py` - Defines `AuditEvent`, JSON sanitization/redaction, and bounded serialization helpers.
-- `src/mcp_sentinel/audit/logger.py` - Implements `AuditLogger` with Postgres insert and safe API key UUID parsing.
-- `src/mcp_sentinel/audit/__init__.py` - Exposes audit model imports.
+- `src/bansho/audit/models.py` - Defines `AuditEvent`, JSON sanitization/redaction, and bounded serialization helpers.
+- `src/bansho/audit/logger.py` - Implements `AuditLogger` with Postgres insert and safe API key UUID parsing.
+- `src/bansho/audit/__init__.py` - Exposes audit model imports.
 - `tests/test_audit_logger.py` - Covers audit insertion, redaction behavior, and default pool fallback.
-- `src/mcp_sentinel/storage/schema.py` - Adds `role` and `decision` fields to `audit_events` creation/migration paths.
+- `src/bansho/storage/schema.py` - Adds `role` and `decision` fields to `audit_events` creation/migration paths.
 
 ## Decisions Made
 
@@ -90,7 +90,7 @@ Each task was committed atomically:
 - **Found during:** Task 2 (Implement Postgres audit logger)
 - **Issue:** Existing schema lacked `role` and `decision` columns required by the new audit model/logger contract.
 - **Fix:** Added `role` and `decision` to table creation SQL plus additive `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` migration statements.
-- **Files modified:** `src/mcp_sentinel/storage/schema.py`
+- **Files modified:** `src/bansho/storage/schema.py`
 - **Verification:** `uv run pytest -q`
 - **Committed in:** `e5426d7` (part of Task 2 commit)
 

@@ -22,10 +22,10 @@ tech-stack:
 
 key-files:
   created:
-    - src/mcp_sentinel/storage/__init__.py
-    - src/mcp_sentinel/storage/redis.py
-    - src/mcp_sentinel/storage/postgres.py
-    - src/mcp_sentinel/storage/schema.py
+    - src/bansho/storage/__init__.py
+    - src/bansho/storage/redis.py
+    - src/bansho/storage/postgres.py
+    - src/bansho/storage/schema.py
   modified:
     - .planning/phases/01-foundation/01-02-SUMMARY.md
     - .planning/STATE.md
@@ -72,10 +72,10 @@ Each task was committed atomically:
 _Plan metadata commit is created after summary/state updates._
 
 ## Files Created/Modified
-- `src/mcp_sentinel/storage/__init__.py` - storage package exports for Redis helpers.
-- `src/mcp_sentinel/storage/redis.py` - Redis lifecycle and primitive helper operations.
-- `src/mcp_sentinel/storage/postgres.py` - asyncpg pool lifecycle and schema bootstrap entrypoint.
-- `src/mcp_sentinel/storage/schema.py` - idempotent schema DDL and storage smoke-check helper.
+- `src/bansho/storage/__init__.py` - storage package exports for Redis helpers.
+- `src/bansho/storage/redis.py` - Redis lifecycle and primitive helper operations.
+- `src/bansho/storage/postgres.py` - asyncpg pool lifecycle and schema bootstrap entrypoint.
+- `src/bansho/storage/schema.py` - idempotent schema DDL and storage smoke-check helper.
 
 ## Decisions Made
 - Used lazy process-level async clients/pools for Redis and Postgres to keep upcoming middleware integrations simple.

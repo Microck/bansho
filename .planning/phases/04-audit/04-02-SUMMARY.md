@@ -24,7 +24,7 @@ key-files:
   created:
     - tests/test_audit_integration.py
   modified:
-    - src/mcp_sentinel/proxy/sentinel_server.py
+    - src/bansho/proxy/bansho_server.py
 
 key-decisions:
   - "Emit audit rows from a finally block so each tool-call attempt logs exactly once, including denied and exception paths."
@@ -66,7 +66,7 @@ Each task was committed atomically:
 **Plan metadata:** `TBD` (docs: complete plan)
 
 ## Files Created/Modified
-- `src/mcp_sentinel/proxy/sentinel_server.py` - Audits `tools/call` attempts across allowed/denied/failure paths with safe payload handling.
+- `src/bansho/proxy/bansho_server.py` - Audits `tools/call` attempts across allowed/denied/failure paths with safe payload handling.
 - `tests/test_audit_integration.py` - Validates Postgres audit rows exist for unauthenticated, forbidden, and successful tool calls.
 
 ## Decisions Made

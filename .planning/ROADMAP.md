@@ -1,4 +1,4 @@
-# ToolchainGate Roadmap
+# Bansho Roadmap
 
 ## Overview
 
@@ -57,13 +57,13 @@ Security gateway for the Model Context Protocol (MCP) that adds authentication, 
 4. Header and query param both work
 
 **Deliverables:**
-- `src/mcp_sentinel/auth/hash.py` (completed in 02-01)
-- `src/mcp_sentinel/auth/api_keys.py` (completed in 02-01)
-- `src/mcp_sentinel/middleware/auth.py` (completed in 02-02)
-- `src/mcp_sentinel/proxy/sentinel_server.py` (auth enforcement added in 02-02)
+- `src/bansho/auth/hash.py` (completed in 02-01)
+- `src/bansho/auth/api_keys.py` (completed in 02-01)
+- `src/bansho/middleware/auth.py` (completed in 02-02)
+- `src/bansho/proxy/bansho_server.py` (auth enforcement added in 02-02)
 - `tests/test_auth_enforcement.py` (completed in 02-02)
-- `src/mcp_sentinel/cli/keys.py` (completed in 02-03)
-- `src/mcp_sentinel/main.py` (serve/keys command routing added in 02-03)
+- `src/bansho/cli/keys.py` (completed in 02-03)
+- `src/bansho/main.py` (serve/keys command routing added in 02-03)
 
 ---
 
@@ -100,7 +100,7 @@ Security gateway for the Model Context Protocol (MCP) that adds authentication, 
 - `src/middleware/authz.py`
 - `src/middleware/rate_limit.py`
 - `config/policies.yaml`
-- `src/mcp_sentinel/proxy/sentinel_server.py` (strict `auth -> authz -> rate_limit -> forward` ordering finalized in 03-04)
+- `src/bansho/proxy/bansho_server.py` (strict `auth -> authz -> rate_limit -> forward` ordering finalized in 03-04)
 - `tests/test_security_pipeline.py` (bypass-prevention E2E regression added in 03-04)
 
 ---
@@ -126,9 +126,9 @@ Security gateway for the Model Context Protocol (MCP) that adds authentication, 
 4. Dashboard shows recent logs
 
 **Deliverables:**
-- `src/mcp_sentinel/audit/models.py` (completed in 04-01)
-- `src/mcp_sentinel/audit/logger.py` (completed in 04-01)
-- `src/mcp_sentinel/ui/dashboard.py` (completed in 04-03)
+- `src/bansho/audit/models.py` (completed in 04-01)
+- `src/bansho/audit/logger.py` (completed in 04-01)
+- `src/bansho/ui/dashboard.py` (completed in 04-03)
 
 ---
 

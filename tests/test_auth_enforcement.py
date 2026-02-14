@@ -9,9 +9,9 @@ from mcp.server.lowlevel.server import request_ctx
 from mcp.shared.context import RequestContext
 from mcp.shared.exceptions import McpError
 
-from mcp_sentinel.middleware import auth as auth_middleware
-from mcp_sentinel.policy.models import Policy
-from mcp_sentinel.proxy.sentinel_server import create_sentinel_server
+from bansho.middleware import auth as auth_middleware
+from bansho.policy.models import Policy
+from bansho.proxy.bansho_server import create_bansho_server
 
 
 class FakeUpstreamConnector:
@@ -158,7 +158,7 @@ async def test_tools_list_and_call_reject_requests_without_api_key(
     auth_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector, policy=auth_policy)
+    server = create_bansho_server(connector, policy=auth_policy)
 
     list_handler = server.request_handlers[types.ListToolsRequest]
     call_handler = server.request_handlers[types.CallToolRequest]
@@ -192,7 +192,7 @@ async def test_tools_list_and_call_succeed_with_valid_header_key(
     auth_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector, policy=auth_policy)
+    server = create_bansho_server(connector, policy=auth_policy)
 
     list_handler = server.request_handlers[types.ListToolsRequest]
     call_handler = server.request_handlers[types.CallToolRequest]
@@ -227,7 +227,7 @@ async def test_tools_list_succeeds_with_bearer_authorization_header(
     auth_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector, policy=auth_policy)
+    server = create_bansho_server(connector, policy=auth_policy)
     list_handler = server.request_handlers[types.ListToolsRequest]
 
     list_result = await _call_with_context(
@@ -246,7 +246,7 @@ async def test_tools_list_succeeds_with_query_param_api_key(
     auth_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector, policy=auth_policy)
+    server = create_bansho_server(connector, policy=auth_policy)
     list_handler = server.request_handlers[types.ListToolsRequest]
 
     list_result = await _call_with_context(
@@ -265,7 +265,7 @@ async def test_tools_list_rejects_invalid_api_key(
     auth_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector, policy=auth_policy)
+    server = create_bansho_server(connector, policy=auth_policy)
     list_handler = server.request_handlers[types.ListToolsRequest]
 
     with pytest.raises(McpError) as error:

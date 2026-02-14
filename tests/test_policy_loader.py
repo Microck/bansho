@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from mcp_sentinel.policy.loader import PolicyLoadError, load_policy
+from bansho.policy.loader import PolicyLoadError, load_policy
 
 
 def _write_policy(path: Path, body: str) -> Path:

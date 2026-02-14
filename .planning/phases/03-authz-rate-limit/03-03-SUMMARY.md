@@ -22,9 +22,9 @@ tech-stack:
 
 key-files:
   created:
-    - src/mcp_sentinel/ratelimit/limiter.py
-    - src/mcp_sentinel/ratelimit/__init__.py
-    - src/mcp_sentinel/middleware/rate_limit.py
+    - src/bansho/ratelimit/limiter.py
+    - src/bansho/ratelimit/__init__.py
+    - src/bansho/middleware/rate_limit.py
     - tests/test_rate_limit.py
   modified:
     - tests/test_rate_limit.py
@@ -72,9 +72,9 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `src/mcp_sentinel/ratelimit/limiter.py` - Fixed-window limiter helpers, key builders, and Redis Lua script integration.
-- `src/mcp_sentinel/ratelimit/__init__.py` - Public exports for limiter primitives.
-- `src/mcp_sentinel/middleware/rate_limit.py` - Policy-aware dual-dimension rate-limit middleware and 429 enforcement.
+- `src/bansho/ratelimit/limiter.py` - Fixed-window limiter helpers, key builders, and Redis Lua script integration.
+- `src/bansho/ratelimit/__init__.py` - Public exports for limiter primitives.
+- `src/bansho/middleware/rate_limit.py` - Policy-aware dual-dimension rate-limit middleware and 429 enforcement.
 - `tests/test_rate_limit.py` - Deterministic regression tests for key patterns, threshold exceed, and reset semantics.
 
 ## Decisions Made

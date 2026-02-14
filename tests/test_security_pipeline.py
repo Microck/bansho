@@ -9,10 +9,10 @@ from mcp.server.lowlevel.server import request_ctx
 from mcp.shared.context import RequestContext
 from mcp.shared.exceptions import McpError
 
-from mcp_sentinel.middleware import auth as auth_middleware
-from mcp_sentinel.policy.models import Policy
-from mcp_sentinel.proxy.sentinel_server import create_sentinel_server
-from mcp_sentinel.ratelimit import limiter as limiter_module
+from bansho.middleware import auth as auth_middleware
+from bansho.policy.models import Policy
+from bansho.proxy.bansho_server import create_bansho_server
+from bansho.ratelimit import limiter as limiter_module
 
 RequestType = TypeVar("RequestType")
 
@@ -180,7 +180,7 @@ async def test_security_pipeline_prevents_bypass_and_only_forwards_allowed_reque
     fake_redis_eval: dict[str, int],
 ) -> None:
     _ = patch_api_key_resolution
-    server = create_sentinel_server(connector, policy=security_policy)
+    server = create_bansho_server(connector, policy=security_policy)
     call_handler = server.request_handlers[types.CallToolRequest]
 
     disallowed_request = types.CallToolRequest(

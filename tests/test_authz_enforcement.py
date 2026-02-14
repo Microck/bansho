@@ -9,10 +9,10 @@ from mcp.server.lowlevel.server import request_ctx
 from mcp.shared.context import RequestContext
 from mcp.shared.exceptions import McpError
 
-from mcp_sentinel.middleware import auth as auth_middleware
-from mcp_sentinel.policy.models import Policy
-from mcp_sentinel.proxy.sentinel_server import create_sentinel_server
-from mcp_sentinel.ratelimit import limiter as limiter_module
+from bansho.middleware import auth as auth_middleware
+from bansho.policy.models import Policy
+from bansho.proxy.bansho_server import create_bansho_server
+from bansho.ratelimit import limiter as limiter_module
 
 RequestType = TypeVar("RequestType")
 
@@ -184,7 +184,7 @@ async def test_sensitive_tool_denied_for_readonly_and_user_allowed_for_admin(
     authz_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector, policy=authz_policy)
+    server = create_bansho_server(connector, policy=authz_policy)
     call_handler = server.request_handlers[types.CallToolRequest]
     sensitive_call = types.CallToolRequest(
         params=types.CallToolRequestParams(name="sensitive.delete", arguments={"resource": "doc-1"})
@@ -224,7 +224,7 @@ async def test_tools_list_hides_sensitive_tool_for_readonly_and_user(
     authz_policy: Policy,
     patch_api_key_resolution: None,
 ) -> None:
-    server = create_sentinel_server(connector, policy=authz_policy)
+    server = create_bansho_server(connector, policy=authz_policy)
     list_handler = server.request_handlers[types.ListToolsRequest]
 
     readonly_result = await _call_with_context(

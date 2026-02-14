@@ -1,7 +1,7 @@
 # Phase 5: Demo & Submit - Research
 
 **Researched:** 2026-02-14
-**Domain:** demo packaging for MCP Sentinel (vulnerable server, before/after runner, docs, recording)
+**Domain:** demo packaging for MCP Bansho (vulnerable server, before/after runner, docs, recording)
 **Confidence:** HIGH
 
 <user_constraints>
@@ -33,7 +33,7 @@ The project already uses the official `mcp` Python SDK on both sides: `mcp.serve
 | Library/Tool | Version | Purpose | Why Standard |
 |---|---:|---|---|
 | Python | >=3.11 | runtime | repo baseline (`pyproject.toml`) |
-| `mcp` | >=1.26.0 | MCP server/client SDK | already used by Sentinel proxy and tests |
+| `mcp` | >=1.26.0 | MCP server/client SDK | already used by Bansho proxy and tests |
 | Docker Compose | (local) | Redis + Postgres for demo | matches project infra (`docker-compose.yml`) |
 | Postgres | 16 (docker) | audit log + api keys | matches repo (`docker-compose.yml`) |
 | Redis | 7 (docker) | rate limiting counters | matches repo (`docker-compose.yml`) |
@@ -65,7 +65,7 @@ docker compose up -d
 demo/
   vulnerable_server.py        # intentionally insecure MCP server (upstream)
   client_attack.py            # BEFORE: talks to vulnerable_server.py directly
-  client_after.py             # AFTER: talks to Sentinel, demonstrates 401/403/429/200
+  client_after.py             # AFTER: talks to Bansho, demonstrates 401/403/429/200
   policies_demo.yaml          # policy tuned for recording (small limits + clear roles)
   run_before_after.sh         # one command that runs the full story
   recording_checklist.md      # exact steps + narration beats for ~2 min mp4
@@ -77,10 +77,10 @@ README.md                     # judge-facing quickstart
 
 ### Pattern 1: Vulnerable MCP server over stdio
 **What:** a tiny MCP server exposing a few tools, including one obviously sensitive tool, with *no* auth/authz/rate/audit.
-**When to use:** "before" demo; upstream target for Sentinel.
+**When to use:** "before" demo; upstream target for Bansho.
 **Example:**
 ```python
-# Source: src/mcp_sentinel/proxy/sentinel_server.py (stdio_server + Server request_handlers)
+# Source: src/bansho/proxy/bansho_server.py (stdio_server + Server request_handlers)
 import mcp.types as types
 from mcp.server.lowlevel import Server
 from mcp.server.models import InitializationOptions
@@ -149,10 +149,10 @@ async def run() -> None:
 
 ### Pattern 2: Demo clients using stdio_client + ClientSession
 **What:** client scripts that spawn an MCP server process and call tools via `ClientSession`.
-**When to use:** both BEFORE (talk to vulnerable server directly) and AFTER (talk to Sentinel proxy).
+**When to use:** both BEFORE (talk to vulnerable server directly) and AFTER (talk to Bansho proxy).
 **Example:**
 ```python
-# Source: src/mcp_sentinel/proxy/upstream.py (stdio_client + ClientSession)
+# Source: src/bansho/proxy/upstream.py (stdio_client + ClientSession)
 from mcp import ClientSession
 from mcp.client.stdio import StdioServerParameters, stdio_client
 
@@ -168,11 +168,11 @@ async def call_sensitive_tool() -> None:
 ```
 
 ### Pattern 3: Passing API keys via MCP request meta
-**What:** Sentinel auth reads API key from request meta headers/query (bearer or x-api-key).
+**What:** Bansho auth reads API key from request meta headers/query (bearer or x-api-key).
 **When to use:** AFTER demo to show 401/403/429/200.
 **Example:**
 ```python
-# Source: src/mcp_sentinel/middleware/auth.py (extract_api_key + meta['headers']/meta['query'])
+# Source: src/bansho/middleware/auth.py (extract_api_key + meta['headers']/meta['query'])
 import mcp.types as types
 
 
@@ -184,8 +184,8 @@ await session.list_tools(params=params)
 ```
 
 ### Anti-Patterns to Avoid
-- **Mixing transports in the demo:** Sentinel's current entrypoint is stdio (`run_stdio_proxy`); avoid adding an HTTP-facing Sentinel mode in Phase 5 just for the demo.
-- **Editing `config/policies.yaml` for recording:** keep demo policy separate and select it via `SENTINEL_POLICY_PATH=demo/policies_demo.yaml`.
+- **Mixing transports in the demo:** Bansho's current entrypoint is stdio (`run_stdio_proxy`); avoid adding an HTTP-facing Bansho mode in Phase 5 just for the demo.
+- **Editing `config/policies.yaml` for recording:** keep demo policy separate and select it via `BANSHO_POLICY_PATH=demo/policies_demo.yaml`.
 - **Relying on wall-clock rate limits in narration:** make rate-limit triggers deterministic by using very small limits for a specific tool and a tight loop.
 
 ## Don't Hand-Roll
@@ -193,8 +193,8 @@ await session.list_tools(params=params)
 | Problem | Don't Build | Use Instead | Why |
 |---|---|---|---|
 | MCP protocol framing | custom JSON-RPC framing | `mcp.server.stdio.stdio_server`, `mcp.client.stdio.stdio_client` | easy to get subtly wrong; repo already uses these |
-| Tool request metadata | ad-hoc out-of-band env vars | `meta={"headers": {...}}` / `PaginatedRequestParams(meta=...)` | Sentinel auth reads from meta (tests enforce behavior) |
-| Policy parsing/validation | custom YAML parsing | `mcp_sentinel.policy.loader.load_policy()` | schema validation via Pydantic; consistent errors |
+| Tool request metadata | ad-hoc out-of-band env vars | `meta={"headers": {...}}` / `PaginatedRequestParams(meta=...)` | Bansho auth reads from meta (tests enforce behavior) |
+| Policy parsing/validation | custom YAML parsing | `bansho.policy.loader.load_policy()` | schema validation via Pydantic; consistent errors |
 | Audit proof | parsing stdout logs | Postgres `audit_events` table or dashboard `/api/events` | deterministic and judge-friendly |
 | Process orchestration | complicated orchestration framework | bash + `trap` + `timeout` | fewer dependencies; easy to rerun |
 
@@ -203,10 +203,10 @@ await session.list_tools(params=params)
 ## Common Pitfalls
 
 ### Pitfall 1: "Why am I always getting 401?"
-**What goes wrong:** the AFTER demo client calls Sentinel without meta headers/query, so auth never sees an API key.
+**What goes wrong:** the AFTER demo client calls Bansho without meta headers/query, so auth never sees an API key.
 **Why it happens:** `ClientSession.call_tool` requires `meta=...` explicitly; and `list_tools` requires meta passed via `PaginatedRequestParams(meta=...)`.
 **How to avoid:** always pass API key in `meta["headers"]["x-api-key"]` (or Authorization: Bearer) for all requests you want authenticated.
-**Warning signs:** Sentinel rejects *every* request including harmless tools; audit rows show `decision.auth.allowed=false`.
+**Warning signs:** Bansho rejects *every* request including harmless tools; audit rows show `decision.auth.allowed=false`.
 
 ### Pitfall 2: Non-deterministic 429 behavior
 **What goes wrong:** demo sometimes triggers 429, sometimes doesn't.
@@ -230,27 +230,27 @@ await session.list_tools(params=params)
 
 Verified patterns from this repo:
 
-### Start Sentinel with a demo policy and a stdio upstream
+### Start Bansho with a demo policy and a stdio upstream
 ```bash
-# Source: src/mcp_sentinel/config.py + src/mcp_sentinel/proxy/upstream.py + src/mcp_sentinel/proxy/sentinel_server.py
+# Source: src/bansho/config.py + src/bansho/proxy/upstream.py + src/bansho/proxy/bansho_server.py
 export UPSTREAM_TRANSPORT=stdio
 export UPSTREAM_CMD="uv run python demo/vulnerable_server.py"
-export SENTINEL_POLICY_PATH="demo/policies_demo.yaml"
+export BANSHO_POLICY_PATH="demo/policies_demo.yaml"
 
-uv run mcp-sentinel serve
+uv run bansho serve
 ```
 
 ### Create API keys for demo roles
 ```bash
-# Source: src/mcp_sentinel/cli/keys.py
-uv run mcp-sentinel keys create --role admin
-uv run mcp-sentinel keys create --role readonly
+# Source: src/bansho/cli/keys.py
+uv run bansho keys create --role admin
+uv run bansho keys create --role readonly
 ```
 
 ### Query audit events via dashboard JSON API
 ```bash
-# Source: src/mcp_sentinel/ui/dashboard.py (/api/events, X-API-Key/Bearer/query api_key)
-uv run mcp-sentinel dashboard &
+# Source: src/bansho/ui/dashboard.py (/api/events, X-API-Key/Bearer/query api_key)
+uv run bansho dashboard &
 curl -s -H "X-API-Key: <admin_api_key_value>" "http://127.0.0.1:9100/api/events?limit=5" | head
 ```
 
@@ -281,11 +281,11 @@ curl -s -H "X-API-Key: <admin_api_key_value>" "http://127.0.0.1:9100/api/events?
 ### Primary (HIGH confidence)
 - `pyproject.toml` (dependencies + versions)
 - `docker-compose.yml` (Redis/Postgres versions and ports)
-- `src/mcp_sentinel/proxy/sentinel_server.py` (stdio server + enforcement + audit)
-- `src/mcp_sentinel/proxy/upstream.py` (stdio_client + ClientSession patterns)
-- `src/mcp_sentinel/middleware/auth.py` (meta-based API key extraction)
-- `src/mcp_sentinel/policy/models.py` + `src/mcp_sentinel/policy/loader.py` (policy schema + loading)
-- `src/mcp_sentinel/ui/dashboard.py` (admin-protected audit dashboard + `/api/events`)
+- `src/bansho/proxy/bansho_server.py` (stdio server + enforcement + audit)
+- `src/bansho/proxy/upstream.py` (stdio_client + ClientSession patterns)
+- `src/bansho/middleware/auth.py` (meta-based API key extraction)
+- `src/bansho/policy/models.py` + `src/bansho/policy/loader.py` (policy schema + loading)
+- `src/bansho/ui/dashboard.py` (admin-protected audit dashboard + `/api/events`)
 - `.planning/ROADMAP.md` (Phase 5 requirements and deliverables)
 
 ### Secondary (MEDIUM confidence)

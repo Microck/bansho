@@ -7,10 +7,10 @@ tags: [mcp, proxy, stdio, streamable-http, passthrough, testing]
 # Dependency graph
 requires:
   - phase: 01-02
-    provides: Redis/Postgres connectivity baseline and runnable sentinel scaffold
+    provides: Redis/Postgres connectivity baseline and runnable bansho scaffold
 provides:
   - Upstream MCP connector supporting stdio and HTTP transports
-  - Sentinel MCP server forwarding tools/resources/prompts request families
+  - Bansho MCP server forwarding tools/resources/prompts request families
   - End-to-end passthrough regression test with deterministic upstream fixture
 affects: [02-authentication, 03-authorization-rate-limiting, 04-audit]
 
@@ -21,16 +21,16 @@ tech-stack:
 
 key-files:
   created:
-    - src/mcp_sentinel/proxy/upstream.py
-    - src/mcp_sentinel/proxy/sentinel_server.py
-    - src/mcp_sentinel/proxy/__init__.py
+    - src/bansho/proxy/upstream.py
+    - src/bansho/proxy/bansho_server.py
+    - src/bansho/proxy/__init__.py
     - tests/test_passthrough.py
   modified:
-    - src/mcp_sentinel/main.py
+    - src/bansho/main.py
 
 key-decisions:
   - "Use mcp.server.lowlevel.Server request handlers so passthrough responses are returned verbatim without reshaping"
-  - "Initialize upstream once at startup and mirror upstream capabilities in Sentinel initialization options"
+  - "Initialize upstream once at startup and mirror upstream capabilities in Bansho initialization options"
   - "Emit startup diagnostics to stderr to avoid corrupting stdio JSON-RPC framing"
 
 patterns-established:
@@ -56,15 +56,15 @@ completed: 2026-02-13
 
 ## Accomplishments
 - Implemented `UpstreamConnector` with stdio and streamable HTTP transport support plus async lifecycle management.
-- Added Sentinel MCP server forwarding handlers for `tools/list`, `tools/call`, `resources/list`, `resources/read`, `prompts/list`, and `prompts/get`.
-- Added deterministic passthrough regression coverage proving end-to-end forwarding behavior through Sentinel.
+- Added Bansho MCP server forwarding handlers for `tools/list`, `tools/call`, `resources/list`, `resources/read`, `prompts/list`, and `prompts/get`.
+- Added deterministic passthrough regression coverage proving end-to-end forwarding behavior through Bansho.
 
 ## Task Commits
 
 Each task was committed atomically:
 
 1. **Task 1: Implement upstream connection abstraction** - `c4801b8` (feat)
-2. **Task 2: Sentinel MCP server that forwards tool methods** - `0de7647` (feat)
+2. **Task 2: Bansho MCP server that forwards tool methods** - `0de7647` (feat)
 3. **Task 3: Passthrough test with a fake upstream server** - `2f54c56` (test)
 
 Additional auto-fix commit:
@@ -72,15 +72,15 @@ Additional auto-fix commit:
 - `66a78d6` (fix): moved startup diagnostics off stdout to preserve stdio protocol framing
 
 ## Files Created/Modified
-- `src/mcp_sentinel/proxy/upstream.py` - transport-aware upstream connector and forwarded MCP method wrappers.
-- `src/mcp_sentinel/proxy/sentinel_server.py` - low-level Sentinel MCP server that forwards request families to upstream.
-- `src/mcp_sentinel/proxy/__init__.py` - proxy package export surface.
-- `src/mcp_sentinel/main.py` - runtime entrypoint now launches stdio passthrough proxy.
+- `src/bansho/proxy/upstream.py` - transport-aware upstream connector and forwarded MCP method wrappers.
+- `src/bansho/proxy/bansho_server.py` - low-level Bansho MCP server that forwards request families to upstream.
+- `src/bansho/proxy/__init__.py` - proxy package export surface.
+- `src/bansho/main.py` - runtime entrypoint now launches stdio passthrough proxy.
 - `tests/test_passthrough.py` - end-to-end regression using SDK-based fake upstream server.
 
 ## Decisions Made
 - Chose low-level MCP server handlers over higher-level decorators to preserve upstream payload shapes exactly.
-- Bound Sentinel initialization capabilities to upstream `initialize()` output so clients see real upstream capability flags.
+- Bound Bansho initialization capabilities to upstream `initialize()` output so clients see real upstream capability flags.
 - Routed startup diagnostics to stderr after discovering stdout logs can break stdio JSON-RPC parsing.
 
 ## Deviations from Plan
@@ -91,7 +91,7 @@ Additional auto-fix commit:
 - **Found during:** Plan-level manual sanity verification
 - **Issue:** Startup `structlog` output was written to stdout, causing MCP stdio client parse errors before JSON-RPC responses.
 - **Fix:** Replaced startup event logging with stderr output in proxy startup routine.
-- **Files modified:** `src/mcp_sentinel/proxy/sentinel_server.py`
+- **Files modified:** `src/bansho/proxy/bansho_server.py`
 - **Verification:** Re-ran manual client connect/list-tools flow with no JSON parse failures.
 - **Committed in:** `66a78d6`
 
@@ -119,7 +119,7 @@ None - no new external setup required for this plan.
 
 ## Self-Check: PASSED
 
-- Verified key files exist on disk: `src/mcp_sentinel/proxy/upstream.py`, `src/mcp_sentinel/proxy/sentinel_server.py`, `src/mcp_sentinel/proxy/__init__.py`, `tests/test_passthrough.py`.
+- Verified key files exist on disk: `src/bansho/proxy/upstream.py`, `src/bansho/proxy/bansho_server.py`, `src/bansho/proxy/__init__.py`, `tests/test_passthrough.py`.
 - Verified commit hashes exist in git history: `c4801b8`, `0de7647`, `2f54c56`, `66a78d6`.
 
 ---

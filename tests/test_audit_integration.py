@@ -12,12 +12,12 @@ from mcp.server.lowlevel.server import request_ctx
 from mcp.shared.context import RequestContext
 from mcp.shared.exceptions import McpError
 
-from mcp_sentinel.middleware import auth as auth_middleware
-from mcp_sentinel.policy.models import Policy
-from mcp_sentinel.proxy.sentinel_server import create_sentinel_server
-from mcp_sentinel.ratelimit import limiter as limiter_module
-from mcp_sentinel.storage.postgres import get_postgres_pool
-from mcp_sentinel.storage.schema import bootstrap_schema
+from bansho.middleware import auth as auth_middleware
+from bansho.policy.models import Policy
+from bansho.proxy.bansho_server import create_bansho_server
+from bansho.ratelimit import limiter as limiter_module
+from bansho.storage.postgres import get_postgres_pool
+from bansho.storage.schema import bootstrap_schema
 
 RequestType = TypeVar("RequestType")
 
@@ -215,7 +215,7 @@ async def test_audit_rows_written_for_401_403_and_200_call_paths(
 ) -> None:
     _ = (patch_api_key_resolution, patch_rate_limit_eval)
 
-    server = create_sentinel_server(cast(Any, connector), policy=audit_policy)
+    server = create_bansho_server(cast(Any, connector), policy=audit_policy)
     call_handler = server.request_handlers[types.CallToolRequest]
 
     status_code, _ = await _invoke_with_status(

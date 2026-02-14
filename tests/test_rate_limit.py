@@ -5,10 +5,10 @@ from collections.abc import Sequence
 import pytest
 from mcp.shared.exceptions import McpError
 
-from mcp_sentinel.middleware.auth import AuthContext
-from mcp_sentinel.middleware.rate_limit import enforce_rate_limit
-from mcp_sentinel.policy.models import Policy
-from mcp_sentinel.ratelimit import limiter as limiter_module
+from bansho.middleware.auth import AuthContext
+from bansho.middleware.rate_limit import enforce_rate_limit
+from bansho.policy.models import Policy
+from bansho.ratelimit import limiter as limiter_module
 
 
 @pytest.fixture

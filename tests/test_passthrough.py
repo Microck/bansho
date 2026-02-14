@@ -119,16 +119,16 @@ if __name__ == "__main__":
     anyio.run(run)
 """
 
-FAKE_SENTINEL_SERVER = """
+FAKE_BANSHO_SERVER = """
 from __future__ import annotations
 
 import anyio
 import structlog
 
-import mcp_sentinel.middleware.auth as auth_middleware
-from mcp_sentinel.config import Settings
-from mcp_sentinel.logging import configure_logging
-from mcp_sentinel.proxy.sentinel_server import run_stdio_proxy
+import bansho.middleware.auth as auth_middleware
+from bansho.config import Settings
+from bansho.logging import configure_logging
+from bansho.proxy.bansho_server import run_stdio_proxy
 
 TEST_API_KEY = "integration-test-key"
 
@@ -146,7 +146,7 @@ async def fake_resolve_api_key(presented_key: str) -> dict[str, str] | None:
 auth_middleware.resolve_api_key = fake_resolve_api_key
 
 configure_logging()
-structlog.get_logger("sentinel-test").info("sentinel_test_log")
+structlog.get_logger("bansho-test").info("bansho_test_log")
 
 
 if __name__ == "__main__":
@@ -158,27 +158,27 @@ if __name__ == "__main__":
 async def test_passthrough_tools_resources_and_prompts(tmp_path: Path) -> None:
     project_root = Path(__file__).resolve().parents[1]
     upstream_script = tmp_path / "fake_upstream.py"
-    sentinel_script = tmp_path / "fake_sentinel.py"
+    bansho_script = tmp_path / "fake_bansho.py"
     upstream_script.write_text(textwrap.dedent(FAKE_UPSTREAM_SERVER), encoding="utf-8")
-    sentinel_script.write_text(textwrap.dedent(FAKE_SENTINEL_SERVER), encoding="utf-8")
+    bansho_script.write_text(textwrap.dedent(FAKE_BANSHO_SERVER), encoding="utf-8")
 
     auth_meta = types.RequestParams.Meta.model_validate(
         {"headers": {"X-API-Key": "integration-test-key"}}
     )
 
-    sentinel_process = StdioServerParameters(
+    bansho_process = StdioServerParameters(
         command="uv",
-        args=["run", "python", str(sentinel_script)],
+        args=["run", "python", str(bansho_script)],
         cwd=project_root,
         env={
             "UPSTREAM_TRANSPORT": "stdio",
             "UPSTREAM_CMD": f"uv run python {upstream_script}",
-            "SENTINEL_LISTEN_HOST": "127.0.0.1",
-            "SENTINEL_LISTEN_PORT": "9000",
+            "BANSHO_LISTEN_HOST": "127.0.0.1",
+            "BANSHO_LISTEN_PORT": "9000",
         },
     )
 
-    async with stdio_client(sentinel_process) as (read_stream, write_stream):
+    async with stdio_client(bansho_process) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             initialize_result = await session.initialize()
             assert initialize_result.capabilities.tools is not None

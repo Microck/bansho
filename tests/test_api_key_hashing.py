@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import base64
 
-from mcp_sentinel.auth import (
+from bansho.auth import (
     API_KEY_PREFIX,
     PBKDF2_ITERATIONS,
     PBKDF2_SCHEME,
