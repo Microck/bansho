@@ -20,13 +20,23 @@ SCHEMA_STATEMENTS: tuple[str, ...] = (
         id uuid PRIMARY KEY,
         ts timestamptz NOT NULL DEFAULT NOW(),
         api_key_id uuid REFERENCES api_keys(id) ON DELETE SET NULL,
+        role text NOT NULL DEFAULT 'unknown',
         method text NOT NULL,
         tool_name text NOT NULL,
         request_json jsonb NOT NULL DEFAULT '{}'::jsonb,
         response_json jsonb NOT NULL DEFAULT '{}'::jsonb,
+        decision jsonb NOT NULL DEFAULT '{}'::jsonb,
         status_code integer NOT NULL,
         latency_ms integer NOT NULL CHECK (latency_ms >= 0)
     );
+    """,
+    """
+    ALTER TABLE audit_events
+    ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'unknown';
+    """,
+    """
+    ALTER TABLE audit_events
+    ADD COLUMN IF NOT EXISTS decision jsonb NOT NULL DEFAULT '{}'::jsonb;
     """,
 )
 
