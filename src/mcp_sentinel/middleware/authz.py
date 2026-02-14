@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from mcp_sentinel.middleware.auth import AuthContext
-from mcp_sentinel.policy.models import Policy, TOOL_WILDCARD
+from mcp_sentinel.policy.models import TOOL_WILDCARD, Policy
 
 
 @dataclass(frozen=True, slots=True)

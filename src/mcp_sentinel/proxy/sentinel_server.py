@@ -18,7 +18,6 @@ from mcp_sentinel.policy.loader import DEFAULT_POLICY_PATH, load_policy
 from mcp_sentinel.policy.models import Policy
 from mcp_sentinel.proxy.upstream import UpstreamConnector
 
-
 _FORBIDDEN_ERROR = types.ErrorData(code=403, message="Forbidden")
 
 
@@ -112,7 +111,8 @@ async def run_stdio_proxy(settings: Settings | None = None) -> None:
 
         print(
             "sentinel_proxy_start"
-            f" listen_addr={resolved_settings.sentinel_listen_host}:{resolved_settings.sentinel_listen_port}"
+            f" listen_addr={resolved_settings.sentinel_listen_host}"
+            f":{resolved_settings.sentinel_listen_port}"
             f" upstream_transport={resolved_settings.upstream_transport}"
             f" upstream_target={_upstream_target(resolved_settings)}",
             f" policy_path={policy_path}",
