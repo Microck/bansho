@@ -1,4 +1,4 @@
-# Bansho - Project State
+# ToolchainGate - Project State
 
 ## Current Position
 
@@ -33,7 +33,7 @@ Progress: █████████████░░░ 13/16 plans (81%)
 | 01-02 | Bootstrap schema with idempotent CREATE TABLE IF NOT EXISTS | Allow repeatable setup without migration tooling this early |
 | 01-02 | Return storage smoke check as boolean map contract | Keep health-check integration trivial for later CLI/API endpoints |
 | 01-03 | Use low-level MCP request handlers for passthrough | Return upstream result payloads without reshaping |
-| 01-03 | Mirror upstream initialize capabilities in Bansho | Ensure client-facing capabilities match the proxied upstream |
+| 01-03 | Mirror upstream initialize capabilities in Sentinel | Ensure client-facing capabilities match the proxied upstream |
 | 01-03 | Emit startup diagnostics to stderr for stdio mode | Protect MCP JSON-RPC framing from non-protocol log output |
 | 02-01 | Use PBKDF2-SHA256 (stdlib) with per-key salt for API key storage | Keep hashes non-reversible without introducing new crypto dependencies |
 | 02-01 | Encode stored hashes as `scheme$iterations$salt$digest` | Preserve algorithm metadata for deterministic future verification and migrations |
@@ -46,10 +46,10 @@ Progress: █████████████░░░ 13/16 plans (81%)
 | 02-03 | Bootstrap schema and close Postgres pool within each keys command invocation | Keep local/demo CLI execution reliable without manual database prep/cleanup |
 | 03-01 | Model policies with explicit `admin`, `user`, and `readonly` role keys | Keep authorization behavior predictable and avoid drifting dynamic role maps |
 | 03-01 | Support wildcard tool access via `*` for admin policies only | Preserve explicit allow-list semantics while keeping non-admin roles deny-by-default |
-| 03-01 | Fail closed on missing/invalid policy files via `PolicyLoadError` | Prevent Bansho from starting without a trusted policy source |
+| 03-01 | Fail closed on missing/invalid policy files via `PolicyLoadError` | Prevent Sentinel from starting without a trusted policy source |
 | 03-02 | Return structured authorization decisions (`allowed`, `reason`, `matched_rule`) from middleware | Prepare policy evaluations for future audit and observability without re-parsing handler state |
 | 03-02 | Enforce authz for both `tools/call` and `tools/list` filtering | Reduce sensitive tool discovery while keeping invocation checks non-bypassable |
-| 03-02 | Resolve startup policy path via `BANSHO_POLICY_PATH` with `config/policies.yaml` fallback | Keep runtime policy selection configurable while preserving fail-closed startup behavior |
+| 03-02 | Resolve startup policy path via `SENTINEL_POLICY_PATH` with `config/policies.yaml` fallback | Keep runtime policy selection configurable while preserving fail-closed startup behavior |
 | 03-03 | Use fixed-window Redis keys bucketed by epoch window for per-key and per-tool counters | Keep limiter deterministic while avoiding additional TTL lookups |
 | 03-03 | Enforce both per-api-key and per-tool quotas, denying on first exceeded dimension | Preserve strict abuse controls while minimizing unnecessary limiter operations |
 | 03-03 | Apply conservative fallback limits when policy rate-limit config is missing | Avoid accidental rate-limit disablement in partial/misconfigured policy scenarios |
@@ -84,7 +84,7 @@ Progress: █████████████░░░ 13/16 plans (81%)
 | 2026-02-13 | Completed 03-03 Redis-backed fixed-window limiter, policy middleware, and 429/reset regression coverage |
 | 2026-02-13 | Completed 03-02 tool-level authorization middleware/wiring with role matrix regression coverage |
 | 2026-02-13 | Completed 03-01 policy schema/loader foundation with default deny-first YAML configuration |
-| 2026-02-13 | Completed 02-02 auth middleware + bansho tool auth enforcement with header/query credential tests |
+| 2026-02-13 | Completed 02-02 auth middleware + sentinel tool auth enforcement with header/query credential tests |
 | 2026-02-13 | Completed 02-01 API key hashing + Postgres key CRUD primitives with lifecycle verification |
 | 2026-02-13 | Completed 01-03 MCP passthrough proxy and end-to-end forwarding regression test |
 | 2026-02-13 | Completed 01-02 storage layer (Redis wrapper, Postgres schema bootstrap, smoke check) |

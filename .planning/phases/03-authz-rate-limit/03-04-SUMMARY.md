@@ -23,7 +23,7 @@ key-files:
   created:
     - tests/test_security_pipeline.py
   modified:
-    - src/bansho/proxy/bansho_server.py
+    - src/mcp_sentinel/proxy/sentinel_server.py
     - tests/test_authz_enforcement.py
 
 key-decisions:
@@ -41,7 +41,7 @@ completed: 2026-02-13
 
 # Phase 3 Plan 04: Security Pipeline Summary
 
-**Bansho now enforces a strict tool-call security chain (`auth -> authz -> rate limit -> forward`) with regression coverage that proves denied or limited calls never reach upstream.**
+**Sentinel now enforces a strict tool-call security chain (`auth -> authz -> rate limit -> forward`) with regression coverage that proves denied or limited calls never reach upstream.**
 
 ## Performance
 
@@ -68,7 +68,7 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `src/bansho/proxy/bansho_server.py` - Inlines `authenticate -> authorize -> rate_limit -> upstream` for `tools/call` and keeps 401/403/429 short-circuit behavior.
+- `src/mcp_sentinel/proxy/sentinel_server.py` - Inlines `authenticate -> authorize -> rate_limit -> upstream` for `tools/call` and keeps 401/403/429 short-circuit behavior.
 - `tests/test_security_pipeline.py` - Adds fake-upstream E2E regression with explicit status expectations and upstream call-count assertions.
 - `tests/test_authz_enforcement.py` - Stubs limiter Redis eval for authz tests so full-suite verification remains deterministic after pipeline wiring.
 

@@ -21,9 +21,9 @@ tech-stack:
 
 key-files:
   created:
-    - src/bansho/auth/hash.py
-    - src/bansho/auth/api_keys.py
-    - src/bansho/auth/__init__.py
+    - src/mcp_sentinel/auth/hash.py
+    - src/mcp_sentinel/auth/api_keys.py
+    - src/mcp_sentinel/auth/__init__.py
     - tests/test_api_key_hashing.py
   modified: []
 
@@ -69,9 +69,9 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `src/bansho/auth/hash.py` - API key generation, PBKDF2 hashing, and constant-time verification.
-- `src/bansho/auth/__init__.py` - Public auth hashing exports.
-- `src/bansho/auth/api_keys.py` - Async Postgres-backed API key CRUD primitives.
+- `src/mcp_sentinel/auth/hash.py` - API key generation, PBKDF2 hashing, and constant-time verification.
+- `src/mcp_sentinel/auth/__init__.py` - Public auth hashing exports.
+- `src/mcp_sentinel/auth/api_keys.py` - Async Postgres-backed API key CRUD primitives.
 - `tests/test_api_key_hashing.py` - Regression coverage for hashing behavior and storage format.
 
 ## Decisions Made
@@ -94,10 +94,10 @@ None - no additional external service configuration was required for this plan.
 
 ## Next Phase Readiness
 
-- Ready to wire API key extraction and enforcement into Bansho request handling for AUTH-01/AUTH-03/AUTH-04.
+- Ready to wire API key extraction and enforcement into Sentinel request handling for AUTH-01/AUTH-03/AUTH-04.
 - No blockers carried forward.
 
 ## Self-Check: PASSED
 
-- Verified expected files exist (`src/bansho/auth/hash.py`, `src/bansho/auth/api_keys.py`, `src/bansho/auth/__init__.py`, `tests/test_api_key_hashing.py`, `.planning/phases/02-authentication/02-01-SUMMARY.md`).
+- Verified expected files exist (`src/mcp_sentinel/auth/hash.py`, `src/mcp_sentinel/auth/api_keys.py`, `src/mcp_sentinel/auth/__init__.py`, `tests/test_api_key_hashing.py`, `.planning/phases/02-authentication/02-01-SUMMARY.md`).
 - Verified task commits exist in repository history (`17555cd`, `91ee10c`).

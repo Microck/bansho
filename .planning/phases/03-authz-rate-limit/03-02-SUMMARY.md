@@ -16,22 +16,22 @@ affects: [03-authz-rate-limit-03, 03-authz-rate-limit-04, auth-tests]
 tech-stack:
   added: []
   patterns:
-    - Startup policy loading via BANSHO_POLICY_PATH with fail-closed behavior
+    - Startup policy loading via SENTINEL_POLICY_PATH with fail-closed behavior
     - Tool-level authorization checks driven by AuthContext.role
     - Authorization-aware tool listing to reduce sensitive surface disclosure
 
 key-files:
   created:
-    - src/bansho/middleware/authz.py
+    - src/mcp_sentinel/middleware/authz.py
     - tests/test_authz_enforcement.py
   modified:
-    - src/bansho/proxy/bansho_server.py
+    - src/mcp_sentinel/proxy/sentinel_server.py
     - tests/test_auth_enforcement.py
     - tests/test_passthrough.py
 
 key-decisions:
   - "Represent authorization outcomes as structured decisions (allowed, reason, matched_rule) for future audit/log integration."
-  - "Load policy once during Bansho startup and fail closed if the configured policy file is missing or invalid."
+  - "Load policy once during Sentinel startup and fail closed if the configured policy file is missing or invalid."
   - "Filter tools/list by role policy in addition to enforcing tools/call to reduce discovery of sensitive tools."
 
 patterns-established:
@@ -44,7 +44,7 @@ completed: 2026-02-13
 
 # Phase 3 Plan 02: Authorization Enforcement Summary
 
-**Bansho now enforces policy-driven tool authorization per role, denies unauthorized tool calls with 403, and hides sensitive tools from non-admin listings.**
+**Sentinel now enforces policy-driven tool authorization per role, denies unauthorized tool calls with 403, and hides sensitive tools from non-admin listings.**
 
 ## Performance
 
@@ -57,7 +57,7 @@ completed: 2026-02-13
 ## Accomplishments
 
 - Added `authorize_tool` middleware with deny-by-default behavior and structured decision metadata.
-- Wired policy loading and authorization checks into Bansho tool handlers with fail-closed startup semantics.
+- Wired policy loading and authorization checks into Sentinel tool handlers with fail-closed startup semantics.
 - Added role matrix tests proving readonly/user/admin behavior for sensitive tools and filtered tool lists.
 
 ## Task Commits
@@ -72,8 +72,8 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `src/bansho/middleware/authz.py` - Authorization decision logic for role/tool evaluation.
-- `src/bansho/proxy/bansho_server.py` - Startup policy loading, tools/list filtering, and tools/call 403 enforcement.
+- `src/mcp_sentinel/middleware/authz.py` - Authorization decision logic for role/tool evaluation.
+- `src/mcp_sentinel/proxy/sentinel_server.py` - Startup policy loading, tools/list filtering, and tools/call 403 enforcement.
 - `tests/test_authz_enforcement.py` - Role matrix regression coverage for sensitive tool access.
 - `tests/test_auth_enforcement.py` - Authentication tests updated to inject explicit policy under authz-enabled server construction.
 - `tests/test_passthrough.py` - Integration passthrough fixture updated to use admin role with default deny policy.
@@ -90,7 +90,7 @@ Each task was committed atomically:
 
 **1. [Rule 3 - Blocking] Updated auth enforcement tests for policy-aware server construction**
 - **Found during:** Task 3 (full-suite verification)
-- **Issue:** Existing auth tests called `create_bansho_server(connector)` without the new required `policy` argument, causing `TypeError` failures.
+- **Issue:** Existing auth tests called `create_sentinel_server(connector)` without the new required `policy` argument, causing `TypeError` failures.
 - **Fix:** Added a test policy fixture and passed policy explicitly to each auth test setup call.
 - **Files modified:** `tests/test_auth_enforcement.py`
 - **Verification:** `uv run pytest -q`

@@ -1,4 +1,4 @@
-# Bansho
+# ToolchainGate
 
 ## What This Is
 
@@ -6,7 +6,7 @@ A security gateway for the Model Context Protocol (MCP) that adds authentication
 
 ## Core Value
 
-**25% of MCP servers have NO authentication. Bansho is a drop-in gateway that secures any MCP server with auth, rate limiting, and audit logging — zero code changes required.**
+**25% of MCP servers have NO authentication. ToolchainGate is a drop-in gateway that secures any MCP server with auth, rate limiting, and audit logging — zero code changes required.**
 
 ## Requirements
 

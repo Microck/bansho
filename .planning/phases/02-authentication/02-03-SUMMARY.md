@@ -6,7 +6,7 @@ tags: [auth, api-keys, argparse, postgres, cli]
 
 requires:
   - phase: 02-02
-    provides: Auth middleware and repository-backed API key validation at Bansho boundaries
+    provides: Auth middleware and repository-backed API key validation at Sentinel boundaries
 provides:
   - Operator-facing `keys create/list/revoke` CLI workflow with no direct SQL requirement
   - Safe key output behavior where plaintext API keys are shown only on creation
@@ -21,10 +21,10 @@ tech-stack:
 
 key-files:
   created:
-    - src/bansho/cli/__init__.py
-    - src/bansho/cli/keys.py
+    - src/mcp_sentinel/cli/__init__.py
+    - src/mcp_sentinel/cli/keys.py
   modified:
-    - src/bansho/main.py
+    - src/mcp_sentinel/main.py
 
 key-decisions:
   - "Use a dedicated `keys` argparse tree with explicit `create`, `list`, and `revoke` actions plus readonly default role."
@@ -41,7 +41,7 @@ completed: 2026-02-13
 
 # Phase 2 Plan 03: API Key CLI Summary
 
-**Shipped an operator-safe API key management CLI that creates, lists, and revokes keys from `bansho` while exposing plaintext secrets only at creation time.**
+**Shipped an operator-safe API key management CLI that creates, lists, and revokes keys from `mcp-sentinel` while exposing plaintext secrets only at creation time.**
 
 ## Performance
 
@@ -53,9 +53,9 @@ completed: 2026-02-13
 
 ## Accomplishments
 
-- Added `src/bansho/cli/keys.py` with argparse-based `create`, `list`, and `revoke` subcommands for API key lifecycle operations.
-- Added `src/bansho/cli/__init__.py` exports so the main entrypoint can register and execute key-management commands cleanly.
-- Updated `src/bansho/main.py` to support explicit `serve` and `keys` modes and default to help output when no command is provided.
+- Added `src/mcp_sentinel/cli/keys.py` with argparse-based `create`, `list`, and `revoke` subcommands for API key lifecycle operations.
+- Added `src/mcp_sentinel/cli/__init__.py` exports so the main entrypoint can register and execute key-management commands cleanly.
+- Updated `src/mcp_sentinel/main.py` to support explicit `serve` and `keys` modes and default to help output when no command is provided.
 
 ## Task Commits
 
@@ -68,9 +68,9 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `src/bansho/cli/__init__.py` - Exposes key CLI registration/execution hooks for entrypoint integration.
-- `src/bansho/cli/keys.py` - Implements async key lifecycle commands with safe output semantics.
-- `src/bansho/main.py` - Adds `serve`/`keys` subcommands and routes key operations to CLI handlers.
+- `src/mcp_sentinel/cli/__init__.py` - Exposes key CLI registration/execution hooks for entrypoint integration.
+- `src/mcp_sentinel/cli/keys.py` - Implements async key lifecycle commands with safe output semantics.
+- `src/mcp_sentinel/main.py` - Adds `serve`/`keys` subcommands and routes key operations to CLI handlers.
 
 ## Decisions Made
 

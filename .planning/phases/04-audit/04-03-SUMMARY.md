@@ -22,11 +22,11 @@ tech-stack:
 
 key-files:
   created:
-    - src/bansho/ui/dashboard.py
-    - src/bansho/ui/__init__.py
+    - src/mcp_sentinel/ui/dashboard.py
+    - src/mcp_sentinel/ui/__init__.py
   modified:
-    - src/bansho/config.py
-    - src/bansho/main.py
+    - src/mcp_sentinel/config.py
+    - src/mcp_sentinel/main.py
 
 key-decisions:
   - "Implement dashboard as a minimal stdlib HTTP server to avoid adding web framework dependencies while still serving HTML and JSON views."
@@ -54,9 +54,9 @@ completed: 2026-02-14
 - **Files modified:** 4
 
 ## Accomplishments
-- Added `src/bansho/ui/dashboard.py` with a minimal HTTP dashboard that reads recent events from `audit_events` and renders HTML plus `/api/events` JSON.
+- Added `src/mcp_sentinel/ui/dashboard.py` with a minimal HTTP dashboard that reads recent events from `audit_events` and renders HTML plus `/api/events` JSON.
 - Enforced dashboard access with existing API key validation (`resolve_api_key`) and strict admin-role checks.
-- Wired `bansho dashboard` into the entrypoint and added `DASHBOARD_HOST` / `DASHBOARD_PORT` settings so operators can launch it with shared Postgres configuration.
+- Wired `mcp-sentinel dashboard` into the entrypoint and added `DASHBOARD_HOST` / `DASHBOARD_PORT` settings so operators can launch it with shared Postgres configuration.
 
 ## Task Commits
 
@@ -70,10 +70,10 @@ Each task was committed atomically:
 **Plan metadata:** `TBD` (docs: complete plan)
 
 ## Files Created/Modified
-- `src/bansho/ui/dashboard.py` - Dashboard HTTP server, admin auth gate, filtered Postgres audit query, HTML + JSON responses.
-- `src/bansho/ui/__init__.py` - UI package export for dashboard startup.
-- `src/bansho/config.py` - Added `dashboard_host` / `dashboard_port` settings mapped to `DASHBOARD_HOST` / `DASHBOARD_PORT`.
-- `src/bansho/main.py` - Added `dashboard` subcommand and runtime wiring for dashboard startup.
+- `src/mcp_sentinel/ui/dashboard.py` - Dashboard HTTP server, admin auth gate, filtered Postgres audit query, HTML + JSON responses.
+- `src/mcp_sentinel/ui/__init__.py` - UI package export for dashboard startup.
+- `src/mcp_sentinel/config.py` - Added `dashboard_host` / `dashboard_port` settings mapped to `DASHBOARD_HOST` / `DASHBOARD_PORT`.
+- `src/mcp_sentinel/main.py` - Added `dashboard` subcommand and runtime wiring for dashboard startup.
 
 ## Decisions Made
 - Chose stdlib `http.server` + anyio portal bridge to keep the dashboard lightweight while preserving async Postgres access.
@@ -87,7 +87,7 @@ Each task was committed atomically:
 - **Found during:** Post-task dashboard API smoke verification
 - **Issue:** Unsupported paths could trigger auth/query work before returning a 404 and handler server typing was too implicit for strict tooling.
 - **Fix:** Added early 404 short-circuit for unsupported routes and explicit server casting for portal-backed request handling.
-- **Files modified:** `src/bansho/ui/dashboard.py`
+- **Files modified:** `src/mcp_sentinel/ui/dashboard.py`
 - **Verification:** `uv run ruff check ...`, `uv run mypy ...`, and dashboard API smoke checks returned HTTP 200/JSON as expected.
 - **Committed in:** `6430b71`
 
@@ -108,8 +108,8 @@ None - no external service configuration required.
 - Ready to transition to Phase 5 (`05-01`) for demo and submission deliverables.
 
 ## Self-Check: PASSED
-- Found `src/bansho/ui/dashboard.py`.
-- Found `src/bansho/ui/__init__.py`.
+- Found `src/mcp_sentinel/ui/dashboard.py`.
+- Found `src/mcp_sentinel/ui/__init__.py`.
 - Found `.planning/phases/04-audit/04-03-SUMMARY.md`.
 - Verified commits `35de729`, `0f188bb`, and `6430b71` exist in git history.
 

@@ -19,7 +19,7 @@ tech-stack:
 
 key-files:
   created: [.planning/phases/01-foundation/01-USER-SETUP.md]
-  modified: [pyproject.toml, uv.lock, src/bansho/main.py, src/bansho/config.py, src/bansho/logging.py, docker-compose.yml, .env.example, src/bansho/__main__.py]
+  modified: [pyproject.toml, uv.lock, src/mcp_sentinel/main.py, src/mcp_sentinel/config.py, src/mcp_sentinel/logging.py, docker-compose.yml, .env.example, src/mcp_sentinel/__main__.py]
 
 key-decisions:
   - "Keep startup entrypoint as a thin scaffold that only loads settings and logging."
@@ -36,7 +36,7 @@ completed: 2026-02-13
 
 # Phase 1 Plan 1: Foundation Scaffold Summary
 
-**Python bansho scaffold with typed env configuration, request-id-ready structured logging, and local Redis/Postgres services for future proxy phases.**
+**Python sentinel scaffold with typed env configuration, request-id-ready structured logging, and local Redis/Postgres services for future proxy phases.**
 
 ## Performance
 
@@ -68,9 +68,9 @@ Additional auto-fix commit:
 
 - `pyproject.toml` - Runtime/dev dependency layout, script entrypoint, stricter tooling config
 - `uv.lock` - Lockfile refresh after project dependency metadata updates
-- `src/bansho/main.py` - Scaffold CLI behavior for settings/logging startup and help/version flags
-- `src/bansho/config.py` - Typed settings model with explicit env aliases and DSN typing
-- `src/bansho/logging.py` - Structlog baseline with contextvars merge and request-id helper functions
+- `src/mcp_sentinel/main.py` - Scaffold CLI behavior for settings/logging startup and help/version flags
+- `src/mcp_sentinel/config.py` - Typed settings model with explicit env aliases and DSN typing
+- `src/mcp_sentinel/logging.py` - Structlog baseline with contextvars merge and request-id helper functions
 - `docker-compose.yml` - Local Redis/Postgres services with localhost binds, healthchecks, persistent DB volume
 - `.env.example` - Safe placeholders aligned with local DSN/URL defaults
 - `.planning/phases/01-foundation/01-USER-SETUP.md` - Human setup checklist generated from `user_setup`
@@ -78,7 +78,7 @@ Additional auto-fix commit:
 ## Decisions Made
 
 - Kept the app entrypoint intentionally thin to avoid constraining upcoming proxy/auth architecture in later plans.
-- Used explicit env aliases in `Settings` so required names (`BANSHO_*`, `UPSTREAM_*`, `POSTGRES_DSN`, `REDIS_URL`) are contractually clear.
+- Used explicit env aliases in `Settings` so required names (`SENTINEL_*`, `UPSTREAM_*`, `POSTGRES_DSN`, `REDIS_URL`) are contractually clear.
 - Defaulted local Postgres to host port `5433` because `5432` was already occupied on this machine during execution.
 
 ## Deviations from Plan
@@ -89,15 +89,15 @@ Additional auto-fix commit:
 - **Found during:** Task 3 (Add docker compose for Redis + Postgres)
 - **Issue:** `docker compose up -d redis postgres` failed because host port `5432` was already allocated by another running container.
 - **Fix:** Updated compose mapping to `127.0.0.1:5433:5432` and aligned default `POSTGRES_DSN` values in config/example env.
-- **Files modified:** `docker-compose.yml`, `src/bansho/config.py`, `.env.example`
-- **Verification:** `docker compose up -d redis postgres`, health wait check, and `uv run python -c "from bansho.config import Settings; print(Settings().postgres_dsn)"`
+- **Files modified:** `docker-compose.yml`, `src/mcp_sentinel/config.py`, `.env.example`
+- **Verification:** `docker compose up -d redis postgres`, health wait check, and `uv run python -c "from mcp_sentinel.config import Settings; print(Settings().postgres_dsn)"`
 - **Committed in:** `272ae9a`
 
 **2. [Rule 3 - Blocking] Fixed lint failure in module entrypoint**
 - **Found during:** Plan-level verification
-- **Issue:** `uv run ruff check .` failed with `I001` import formatting in `src/bansho/__main__.py`.
+- **Issue:** `uv run ruff check .` failed with `I001` import formatting in `src/mcp_sentinel/__main__.py`.
 - **Fix:** Applied `ruff --fix` to normalize import block formatting.
-- **Files modified:** `src/bansho/__main__.py`
+- **Files modified:** `src/mcp_sentinel/__main__.py`
 - **Verification:** `uv run ruff check . && uv run pytest`
 - **Committed in:** `6a92253`
 

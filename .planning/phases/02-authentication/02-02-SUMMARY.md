@@ -21,11 +21,11 @@ tech-stack:
 
 key-files:
   created:
-    - src/bansho/middleware/auth.py
-    - src/bansho/middleware/__init__.py
+    - src/mcp_sentinel/middleware/auth.py
+    - src/mcp_sentinel/middleware/__init__.py
     - tests/test_auth_enforcement.py
   modified:
-    - src/bansho/proxy/bansho_server.py
+    - src/mcp_sentinel/proxy/sentinel_server.py
     - tests/test_passthrough.py
 
 key-decisions:
@@ -43,7 +43,7 @@ completed: 2026-02-13
 
 # Phase 2 Plan 02: Auth Enforcement Summary
 
-**Bansho now blocks unauthenticated MCP tool interactions by enforcing API key checks on tools/list and tools/call through middleware-backed request gating.**
+**Sentinel now blocks unauthenticated MCP tool interactions by enforcing API key checks on tools/list and tools/call through middleware-backed request gating.**
 
 ## Performance
 
@@ -56,7 +56,7 @@ completed: 2026-02-13
 ## Accomplishments
 
 - Added authentication middleware that extracts credentials from bearer, `X-API-Key`, or `api_key` query input.
-- Wired auth enforcement into bansho tool listing and invocation handlers with explicit default-deny behavior.
+- Wired auth enforcement into sentinel tool listing and invocation handlers with explicit default-deny behavior.
 - Added auth enforcement regression tests and adjusted passthrough integration coverage to provide credentials.
 
 ## Task Commits
@@ -64,16 +64,16 @@ completed: 2026-02-13
 Each task was committed atomically:
 
 1. **Task 1: Implement API key extraction + validation middleware** - `ef62b79` (feat)
-2. **Task 2: Wire auth enforcement into Bansho MCP handlers** - `23eaed2` (feat)
+2. **Task 2: Wire auth enforcement into Sentinel MCP handlers** - `23eaed2` (feat)
 3. **Task 3: Auth enforcement tests (header + query)** - `94aab36` (test)
 
 **Plan metadata:** Included in final docs commit for summary/state/roadmap updates.
 
 ## Files Created/Modified
 
-- `src/bansho/middleware/auth.py` - Auth context creation, key extraction, and handler wrapper.
-- `src/bansho/middleware/__init__.py` - Middleware exports for server wiring.
-- `src/bansho/proxy/bansho_server.py` - Tool handlers wrapped with API key enforcement.
+- `src/mcp_sentinel/middleware/auth.py` - Auth context creation, key extraction, and handler wrapper.
+- `src/mcp_sentinel/middleware/__init__.py` - Middleware exports for server wiring.
+- `src/mcp_sentinel/proxy/sentinel_server.py` - Tool handlers wrapped with API key enforcement.
 - `tests/test_auth_enforcement.py` - Auth success/failure regression coverage for list/call endpoints.
 - `tests/test_passthrough.py` - Integration harness updated to pass credentials via MCP request metadata.
 
@@ -91,7 +91,7 @@ Each task was committed atomically:
 
 - **Found during:** Task 3 (Auth enforcement tests)
 - **Issue:** Existing passthrough integration expected unauthenticated `tools/list` success and failed after enforcing auth.
-- **Fix:** Added a local bansho test harness with stub key resolver and sent auth metadata on tool requests.
+- **Fix:** Added a local sentinel test harness with stub key resolver and sent auth metadata on tool requests.
 - **Files modified:** `tests/test_passthrough.py`
 - **Verification:** `uv run pytest -q`
 - **Committed in:** `94aab36` (part of Task 3 commit)
