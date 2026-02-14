@@ -2,11 +2,11 @@
 
 ## Current Position
 
-Phase: 3 of 5 (Authorization & Rate Limiting)
-Plan: 4 of 4
-Status: Phase complete
-Last activity: 2026-02-13 - Completed 02-03-PLAN.md
-Progress: ██████████░░░░░░ 10/16 plans (63%)
+Phase: 4 of 5 (Audit)
+Plan: 1 of 3
+Status: In progress
+Last activity: 2026-02-14 - Completed 04-01-PLAN.md
+Progress: ███████████░░░░░ 11/16 plans (69%)
 
 ---
 
@@ -17,7 +17,7 @@ Progress: ██████████░░░░░░ 10/16 plans (63%)
 | 1 | Foundation | Complete | 3/3 plans |
 | 2 | Authentication | Complete | 3/3 plans |
 | 3 | Authorization & Rate Limiting | Complete | 4/4 plans |
-| 4 | Audit | Not Started | 0/3 plans |
+| 4 | Audit | In Progress | 1/3 plans |
 | 5 | Demo & Submit | Not Started | 0/3 plans |
 
 ---
@@ -56,12 +56,15 @@ Progress: ██████████░░░░░░ 10/16 plans (63%)
 | 03-04 | Execute `tools/call` security gates inline as `auth -> authz -> rate_limit -> forward` | Make pipeline ordering explicit and non-bypassable in one auditable code path |
 | 03-04 | Assert upstream call count in security E2E regression scenarios | Ensure denied/limited flows prove side-effect safety, not just status-code correctness |
 | 03-04 | Stub limiter Redis eval in authz test module | Keep authorization tests deterministic after pipeline integration without external Redis loop coupling |
+| 04-01 | Sanitize and bound audit JSON payloads at model construction time | Prevent oversized rows and secret leakage regardless of logger call site |
+| 04-01 | Store audit `role` and `decision` as dedicated columns with JSONB decision payload | Keep later audit queries/filtering straightforward for integration and dashboard plans |
+| 04-01 | Treat invalid `api_key_id` values as NULL during persistence | Preserve non-blocking audit writes when identity metadata is malformed |
 
 ---
 
 ## Blockers/Concerns Carried Forward
 
-- None. Ready to begin Phase 4 audit logging implementation.
+- None. Ready to continue Phase 4 audit pipeline instrumentation.
 
 ---
 
@@ -69,6 +72,7 @@ Progress: ██████████░░░░░░ 10/16 plans (63%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-14 | Completed 04-01 audit primitives: bounded/redacted AuditEvent model and Postgres AuditLogger with regression tests |
 | 2026-02-13 | Completed 02-03 operator API key CLI (`keys create/list/revoke`) and entrypoint command routing |
 | 2026-02-13 | Completed 03-04 explicit auth->authz->rate-limit proxy pipeline wiring with bypass-prevention E2E coverage |
 | 2026-02-13 | Completed 03-03 Redis-backed fixed-window limiter, policy middleware, and 429/reset regression coverage |
@@ -85,18 +89,18 @@ Progress: ██████████░░░░░░ 10/16 plans (63%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/04-audit/04-01-PLAN.md`.
-2. Implement audit logging capture for request identity, tool metadata, and policy outcomes.
-3. Continue progressing remaining plans toward Phase 5 demo submission readiness.
+1. Execute `.planning/phases/04-audit/04-02-PLAN.md`.
+2. Wire audit logging into the proxy pipeline for 401/403/200 request paths.
+3. Continue progressing remaining Phase 4 and Phase 5 plans toward demo submission readiness.
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-13T20:50:57Z
-- Stopped at: Completed 02-03-PLAN.md
-- Resume file: `.planning/phases/04-audit/04-01-PLAN.md`
+- Last session: 2026-02-14T00:34:14Z
+- Stopped at: Completed 04-01-PLAN.md
+- Resume file: `.planning/phases/04-audit/04-02-PLAN.md`
 
 ---
 
-*Last updated: 2026-02-13*
+*Last updated: 2026-02-14*
