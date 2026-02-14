@@ -3,10 +3,10 @@
 ## Current Position
 
 Phase: 4 of 5 (Audit)
-Plan: 1 of 3
+Plan: 2 of 3
 Status: In progress
-Last activity: 2026-02-14 - Completed 04-01-PLAN.md
-Progress: ███████████░░░░░ 11/16 plans (69%)
+Last activity: 2026-02-14 - Completed 04-02-PLAN.md
+Progress: ████████████░░░░ 12/16 plans (75%)
 
 ---
 
@@ -17,7 +17,7 @@ Progress: ███████████░░░░░ 11/16 plans (69%)
 | 1 | Foundation | Complete | 3/3 plans |
 | 2 | Authentication | Complete | 3/3 plans |
 | 3 | Authorization & Rate Limiting | Complete | 4/4 plans |
-| 4 | Audit | In Progress | 1/3 plans |
+| 4 | Audit | In Progress | 2/3 plans |
 | 5 | Demo & Submit | Not Started | 0/3 plans |
 
 ---
@@ -59,6 +59,8 @@ Progress: ███████████░░░░░ 11/16 plans (69%)
 | 04-01 | Sanitize and bound audit JSON payloads at model construction time | Prevent oversized rows and secret leakage regardless of logger call site |
 | 04-01 | Store audit `role` and `decision` as dedicated columns with JSONB decision payload | Keep later audit queries/filtering straightforward for integration and dashboard plans |
 | 04-01 | Treat invalid `api_key_id` values as NULL during persistence | Preserve non-blocking audit writes when identity metadata is malformed |
+| 04-02 | Emit audit events from a finally block in `tools/call` handling | Guarantee one audit attempt per tool-call request regardless of allow/deny/failure outcome |
+| 04-02 | Restrict denied `response_json` to safe `{code,message}` metadata while storing gate details in `decision` | Preserve forensic detail without leaking sensitive failure internals in response payload storage |
 
 ---
 
@@ -72,6 +74,7 @@ Progress: ███████████░░░░░ 11/16 plans (69%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-14 | Completed 04-02 audit pipeline instrumentation: wired call-path audit events (401/403/200/failure) with integration regression coverage |
 | 2026-02-14 | Completed 04-01 audit primitives: bounded/redacted AuditEvent model and Postgres AuditLogger with regression tests |
 | 2026-02-13 | Completed 02-03 operator API key CLI (`keys create/list/revoke`) and entrypoint command routing |
 | 2026-02-13 | Completed 03-04 explicit auth->authz->rate-limit proxy pipeline wiring with bypass-prevention E2E coverage |
@@ -89,17 +92,17 @@ Progress: ███████████░░░░░ 11/16 plans (69%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/04-audit/04-02-PLAN.md`.
-2. Wire audit logging into the proxy pipeline for 401/403/200 request paths.
-3. Continue progressing remaining Phase 4 and Phase 5 plans toward demo submission readiness.
+1. Execute `.planning/phases/04-audit/04-03-PLAN.md`.
+2. Build the audit dashboard view over persisted `audit_events` data.
+3. Continue progressing Phase 5 demo/submission deliverables after Phase 4 completion.
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-14T00:34:14Z
-- Stopped at: Completed 04-01-PLAN.md
-- Resume file: `.planning/phases/04-audit/04-02-PLAN.md`
+- Last session: 2026-02-14T01:17:59Z
+- Stopped at: Completed 04-02-PLAN.md
+- Resume file: `.planning/phases/04-audit/04-03-PLAN.md`
 
 ---
 
