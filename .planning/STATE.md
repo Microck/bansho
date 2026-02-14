@@ -3,10 +3,10 @@
 ## Current Position
 
 Phase: 4 of 5 (Audit)
-Plan: 2 of 3
-Status: In progress
-Last activity: 2026-02-14 - Completed 04-02-PLAN.md
-Progress: ████████████░░░░ 12/16 plans (75%)
+Plan: 3 of 3
+Status: Phase complete
+Last activity: 2026-02-14 - Completed 04-03-PLAN.md
+Progress: █████████████░░░ 13/16 plans (81%)
 
 ---
 
@@ -17,7 +17,7 @@ Progress: ████████████░░░░ 12/16 plans (75%)
 | 1 | Foundation | Complete | 3/3 plans |
 | 2 | Authentication | Complete | 3/3 plans |
 | 3 | Authorization & Rate Limiting | Complete | 4/4 plans |
-| 4 | Audit | In Progress | 2/3 plans |
+| 4 | Audit | Complete | 3/3 plans |
 | 5 | Demo & Submit | Not Started | 0/3 plans |
 
 ---
@@ -61,12 +61,14 @@ Progress: ████████████░░░░ 12/16 plans (75%)
 | 04-01 | Treat invalid `api_key_id` values as NULL during persistence | Preserve non-blocking audit writes when identity metadata is malformed |
 | 04-02 | Emit audit events from a finally block in `tools/call` handling | Guarantee one audit attempt per tool-call request regardless of allow/deny/failure outcome |
 | 04-02 | Restrict denied `response_json` to safe `{code,message}` metadata while storing gate details in `decision` | Preserve forensic detail without leaking sensitive failure internals in response payload storage |
+| 04-03 | Implement dashboard with stdlib HTTPServer bridged to async Postgres queries via anyio portal | Deliver audit visibility without introducing new web framework dependencies |
+| 04-03 | Require admin-role API keys for dashboard access | Keep audit event visibility restricted to operator-level credentials |
 
 ---
 
 ## Blockers/Concerns Carried Forward
 
-- None. Ready to continue Phase 4 audit pipeline instrumentation.
+- None. Ready to transition to Phase 5 demo and submission work.
 
 ---
 
@@ -74,6 +76,7 @@ Progress: ████████████░░░░ 12/16 plans (75%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-14 | Completed 04-03 audit dashboard delivery: admin-protected HTTP/JSON audit event viewer with api_key_id/tool_name filters and CLI wiring |
 | 2026-02-14 | Completed 04-02 audit pipeline instrumentation: wired call-path audit events (401/403/200/failure) with integration regression coverage |
 | 2026-02-14 | Completed 04-01 audit primitives: bounded/redacted AuditEvent model and Postgres AuditLogger with regression tests |
 | 2026-02-13 | Completed 02-03 operator API key CLI (`keys create/list/revoke`) and entrypoint command routing |
@@ -92,17 +95,17 @@ Progress: ████████████░░░░ 12/16 plans (75%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/04-audit/04-03-PLAN.md`.
-2. Build the audit dashboard view over persisted `audit_events` data.
-3. Continue progressing Phase 5 demo/submission deliverables after Phase 4 completion.
+1. Execute `.planning/phases/05-demo-submit/05-01-PLAN.md`.
+2. Build the vulnerable MCP demo server and before/after security walkthrough.
+3. Continue assembling submission artifacts (README and demo video).
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-14T01:17:59Z
-- Stopped at: Completed 04-02-PLAN.md
-- Resume file: `.planning/phases/04-audit/04-03-PLAN.md`
+- Last session: 2026-02-14T01:33:27Z
+- Stopped at: Completed 04-03-PLAN.md
+- Resume file: `.planning/phases/05-demo-submit/05-01-PLAN.md`
 
 ---
 
