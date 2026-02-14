@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from html import escape
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import Any
+from typing import Any, cast
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
@@ -46,16 +46,22 @@ class DashboardHTTPServer(HTTPServer):
 
 
 class DashboardRequestHandler(BaseHTTPRequestHandler):
-    server: DashboardHTTPServer
-
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path not in {"/", "/dashboard", "/api/events"}:
+            self._send_json(
+                HTTPStatus.NOT_FOUND,
+                {"error": {"code": 404, "message": "Not Found"}},
+            )
+            return
+
         query_params = parse_qs(parsed.query)
 
         try:
             auth_context = self._authenticate(query_params)
             filters = _extract_filters(query_params)
-            events = self.server.portal.call(
+            dashboard_server = cast(DashboardHTTPServer, self.server)
+            events = dashboard_server.portal.call(
                 _fetch_recent_events,
                 filters.limit,
                 filters.api_key_id,
@@ -113,7 +119,8 @@ class DashboardRequestHandler(BaseHTTPRequestHandler):
 
     def _authenticate(self, query_params: dict[str, list[str]]) -> DashboardAuthContext:
         presented_api_key = _extract_presented_api_key(self.headers, query_params)
-        return self.server.portal.call(_authenticate_admin_api_key, presented_api_key)
+        dashboard_server = cast(DashboardHTTPServer, self.server)
+        return dashboard_server.portal.call(_authenticate_admin_api_key, presented_api_key)
 
     def _send_html(self, status: HTTPStatus, body: str) -> None:
         encoded = body.encode("utf-8")
