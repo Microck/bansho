@@ -11,6 +11,8 @@ UpstreamTransport = Literal["stdio", "http"]
 class Settings(BaseSettings):
     sentinel_listen_host: str = Field(default="127.0.0.1", validation_alias="SENTINEL_LISTEN_HOST")
     sentinel_listen_port: int = Field(default=9000, validation_alias="SENTINEL_LISTEN_PORT")
+    dashboard_host: str = Field(default="127.0.0.1", validation_alias="DASHBOARD_HOST")
+    dashboard_port: int = Field(default=9100, validation_alias="DASHBOARD_PORT")
 
     upstream_transport: UpstreamTransport = Field(
         default="stdio", validation_alias="UPSTREAM_TRANSPORT"

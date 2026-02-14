@@ -10,6 +10,7 @@ from mcp_sentinel.cli import register_keys_subcommand, run_keys_command
 from mcp_sentinel.config import Settings
 from mcp_sentinel.logging import configure_logging
 from mcp_sentinel.proxy.sentinel_server import run_stdio_proxy
+from mcp_sentinel.ui import run_dashboard_server
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -28,6 +29,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Print resolved settings and exit",
     )
 
+    dashboard_parser = subparsers.add_parser("dashboard", help="Start the audit dashboard")
+    dashboard_parser.add_argument(
+        "--print-settings",
+        action="store_true",
+        help="Print resolved dashboard settings and exit",
+    )
+
     register_keys_subcommand(subparsers)
 
     return parser
@@ -44,6 +52,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if command == "keys":
         return run_keys_command(args)
+
+    if command == "dashboard":
+        return _run_dashboard(args)
 
     if command != "serve":
         parser.error(f"Unknown command: {command}")
@@ -67,6 +78,32 @@ def _run_serve(args: argparse.Namespace) -> int:
         log.info("sentinel_shutdown")
     except Exception:
         log.exception("sentinel_runtime_error")
+        return 1
+
+    return 0
+
+
+def _run_dashboard(args: argparse.Namespace) -> int:
+    settings = Settings()
+    configure_logging()
+    log = structlog.get_logger("mcp-sentinel")
+
+    if args.print_settings:
+        print(
+            {
+                "dashboard_host": settings.dashboard_host,
+                "dashboard_port": settings.dashboard_port,
+                "postgres_dsn": str(settings.postgres_dsn),
+            }
+        )
+        return 0
+
+    try:
+        run_dashboard_server(settings)
+    except KeyboardInterrupt:
+        log.info("dashboard_shutdown")
+    except Exception:
+        log.exception("dashboard_runtime_error")
         return 1
 
     return 0
