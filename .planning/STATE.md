@@ -3,10 +3,10 @@
 ## Current Position
 
 Phase: 5 of 5 (Demo & Submit)
-Plan: 2 of 3
-Status: In progress
-Last activity: 2026-02-15 - Completed 05-02-PLAN.md
-Progress: ███████████████░ 15/16 plans (94%)
+Plan: 3 of 3
+Status: Phase complete
+Last activity: 2026-02-15 - Completed 05-03-PLAN.md
+Progress: ████████████████ 16/16 plans (100%)
 
 ---
 
@@ -18,7 +18,7 @@ Progress: ███████████████░ 15/16 plans (94%)
 | 2 | Authentication | Complete | 3/3 plans |
 | 3 | Authorization & Rate Limiting | Complete | 4/4 plans |
 | 4 | Audit | Complete | 3/3 plans |
-| 5 | Demo & Submit | In progress | 2/3 plans |
+| 5 | Demo & Submit | Complete | 3/3 plans |
 
 ---
 
@@ -67,12 +67,14 @@ Progress: ███████████████░ 15/16 plans (94%)
 | 05-01 | Spawn and teardown vulnerable server within attack client script | Make unauthorized demo execution reproducible in one command |
 | 05-02 | Keep recording-specific policies in `demo/policies_demo.yaml` | Protect default production-safe policy behavior while enabling deterministic demo outcomes |
 | 05-02 | Assert 401/403/429/200 via Sentinel stdio flow inside one runner script | Ensure fast, repeatable, judge-friendly evidence in a single command |
+| 05-03 | Add hosted demo video URL placeholder in README | Support out-of-band final video delivery without forcing binary storage in repository |
+| 05-03 | Tie docs and recording checklist to `bash demo/run_before_after.sh` | Keep judge verification path deterministic and command-driven |
 
 ---
 
 ## Blockers/Concerns Carried Forward
 
-- None. Proceed with Phase 5 Plan 3 documentation and recording checklist finalization.
+- None. All phase plans complete; project ready for final submission handoff.
 
 ---
 
@@ -80,6 +82,7 @@ Progress: ███████████████░ 15/16 plans (94%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-15 | Completed 05-03 submission docs and recording checklist: README overhaul, policies reference, architecture overview, and video handoff checklist |
 | 2026-02-15 | Completed 05-02 deterministic before/after runner: docker readiness, key provisioning, 401/403/429/200 assertions, and dashboard audit evidence |
 | 2026-02-15 | Completed 05-01 vulnerable demo baseline: unauthenticated MCP server, attack client, and before-state quickstart docs |
 | 2026-02-14 | Completed 04-03 audit dashboard delivery: admin-protected HTTP/JSON audit event viewer with api_key_id/tool_name filters and CLI wiring |
@@ -101,17 +104,17 @@ Progress: ███████████████░ 15/16 plans (94%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/05-demo-submit/05-03-PLAN.md`.
-2. Finalize README, policy docs, and architecture docs for submission readiness.
-3. Create recording checklist and add hosted demo video URL placeholder.
+1. Record final 2-minute demo and upload to hosted URL.
+2. Replace README `Demo video:` placeholder with the real link.
+3. Submit final hackathon package.
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-15T04:49:40Z
-- Stopped at: Completed 05-02-PLAN.md
-- Resume file: `.planning/phases/05-demo-submit/05-03-PLAN.md`
+- Last session: 2026-02-15T04:53:32Z
+- Stopped at: Completed 05-03-PLAN.md
+- Resume file: `None (phase complete)`
 
 ---
 
