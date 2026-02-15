@@ -2,11 +2,11 @@
 
 ## Current Position
 
-Phase: 5 of 5 (Demo & Submit)
-Plan: 3 of 3
+Phase: 6 of 6 (Go Migration)
+Plan: 1 of 1
 Status: Phase complete
-Last activity: 2026-02-15 - Completed 05-03-PLAN.md
-Progress: ████████████████ 16/16 plans (100%)
+Last activity: 2026-02-15 - Completed 06-01-PLAN.md
+Progress: █████████████████ 17/17 plans (100%)
 
 ---
 
@@ -19,6 +19,7 @@ Progress: ████████████████ 16/16 plans (100%)
 | 3 | Authorization & Rate Limiting | Complete | 4/4 plans |
 | 4 | Audit | Complete | 3/3 plans |
 | 5 | Demo & Submit | Complete | 3/3 plans |
+| 6 | Go Migration | Complete | 1/1 plans |
 
 ---
 
@@ -69,12 +70,15 @@ Progress: ████████████████ 16/16 plans (100%)
 | 05-02 | Assert 401/403/429/200 via Sentinel stdio flow inside one runner script | Ensure fast, repeatable, judge-friendly evidence in a single command |
 | 05-03 | Add hosted demo video URL placeholder in README | Support out-of-band final video delivery without forcing binary storage in repository |
 | 05-03 | Tie docs and recording checklist to `bash demo/run_before_after.sh` | Keep judge verification path deterministic and command-driven |
+| 06-01 | Keep existing Postgres schema (`api_keys`, `audit_events`) during migration | Preserve docker-compose/local workflows and avoid migration tooling scope |
+| 06-01 | Use MCP Go SDK middleware + low-level tool handlers for proxying | Preserve upstream payloads and enable per-method passthrough without reshaping |
+| 06-01 | Run demo checks via Go MCP clients (CommandTransport) | Remove Python tooling dependency from the demo runner |
 
 ---
 
 ## Blockers/Concerns Carried Forward
 
-- None. All phase plans complete; project ready for final submission handoff.
+- None. Go migration complete; ready for final submission.
 
 ---
 
@@ -82,6 +86,7 @@ Progress: ████████████████ 16/16 plans (100%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-15 | Completed 06-01 Go migration: Go MCP gateway, key CLI, YAML policy, Redis limiter, Postgres audit, dashboard API, and Go-only demo runner + integration test |
 | 2026-02-15 | Completed 05-03 submission docs and recording checklist: README overhaul, policies reference, architecture overview, and video handoff checklist |
 | 2026-02-15 | Completed 05-02 deterministic before/after runner: docker readiness, key provisioning, 401/403/429/200 assertions, and dashboard audit evidence |
 | 2026-02-15 | Completed 05-01 vulnerable demo baseline: unauthenticated MCP server, attack client, and before-state quickstart docs |
@@ -107,13 +112,14 @@ Progress: ████████████████ 16/16 plans (100%)
 1. Record final 2-minute demo and upload to hosted URL.
 2. Replace README `Demo video:` placeholder with the real link.
 3. Submit final hackathon package.
+4. Optional: archive/remove the legacy Python implementation once the Go surface is accepted.
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-15T04:53:32Z
-- Stopped at: Completed 05-03-PLAN.md
+- Last session: 2026-02-15T06:38:31Z
+- Stopped at: Completed 06-01-PLAN.md
 - Resume file: `None (phase complete)`
 
 ---

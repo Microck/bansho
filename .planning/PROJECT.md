@@ -58,9 +58,13 @@ A security gateway for the Model Context Protocol (MCP) that adds authentication
 ## Constraints
 
 - **Timeline**: 5 weeks (Feb 10 - Mar 15, 2026)
-- **Tech Stack**: Python, Microsoft Agent Framework (optional), Azure AI Foundry
-- **Core**: MCP protocol implementation, reverse proxy
-- **Storage**: PostgreSQL (audit logs), Redis (rate limiting)
+- **Perfect Tech Stack**:
+  - **Language**: Go (single static binary, great for gateways)
+  - **MCP**: official MCP Go SDK (`github.com/modelcontextprotocol/go-sdk`) for spec-compliant server/client + stdio/command transports
+  - **Core**: MCP reverse proxy + security middleware pipeline (auth -> authz -> rate limit -> forward)
+  - **Storage**: PostgreSQL (audit logs), Redis (rate limiting)
+  - **Config**: YAML policies + env-driven runtime settings
+  - **Testing**: Go test + table-driven tests; integration tests using docker compose
 - **Demo**: 2-minute video required
 
 ## Key Decisions
