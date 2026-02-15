@@ -43,3 +43,26 @@ Expected output includes:
 
 - `List-tools smoke mode passed.`
 - `Server subprocess terminated cleanly.`
+
+## Full Before/After Runner
+
+Run the end-to-end hackathon demo flow with one command:
+
+```bash
+bash demo/run_before_after.sh
+```
+
+The runner:
+
+- Starts Redis and Postgres with Docker Compose and waits for readiness.
+- Executes the before-state unauthorized attack.
+- Creates deterministic `readonly` and `admin` API keys.
+- Starts Sentinel against the vulnerable server with `BANSHO_POLICY_PATH=demo/policies_demo.yaml`.
+- Asserts after-state outcomes: `401`, `403`, `429`, and `200`.
+- Confirms audit rows increase and fetches non-empty dashboard API events.
+
+Expected output includes:
+
+- `After-state checks complete: 401 / 403 / 429 / 200`
+- `Audit delta: +... events`
+- `Dashboard API returned ... events`
