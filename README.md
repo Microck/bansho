@@ -1,76 +1,82 @@
 # Bansho
 
-Bansho is a security gateway for the Model Context Protocol (MCP).
-It sits between MCP clients and upstream MCP servers to enforce:
+Bansho is an MCP security gateway that sits between MCP clients and upstream MCP servers.
+It adds API-key authentication, role-based tool authorization, rate limiting, and audit logging without requiring upstream code changes.
 
-- API key authentication
-- Role-based tool authorization
-- Per-key and per-tool rate limiting
-- Audit logging with a simple dashboard
+Demo video: https://example.com/bansho-demo-video
 
-## Why Bansho
+## Why It Matters
 
-Many MCP servers expose tools with little or no security controls.
-Bansho provides a drop-in guard layer without requiring upstream server code changes.
+Many MCP servers expose powerful tools over stdio/HTTP with little protection.
+Bansho enforces a deny-first security posture while preserving normal MCP protocol behavior.
 
 ## Features
 
-- MCP protocol passthrough over stdio and HTTP upstream modes
-- API key management CLI (`create`, `list`, `revoke`)
-- YAML policy configuration for tool-level access
-- Redis-backed fixed-window rate limiting
-- PostgreSQL-backed audit event storage
-- Dashboard and JSON API for recent audit activity
+- MCP passthrough proxy for stdio and HTTP upstream transports
+- API key lifecycle CLI (`bansho keys create|list|revoke`)
+- YAML policies for role-to-tool allow lists
+- Redis fixed-window rate limiting (per API key and per tool)
+- PostgreSQL audit event storage with a lightweight dashboard API
 
-## Requirements
+## Quickstart
 
-- Python 3.11+
-- Redis
-- PostgreSQL
-- `uv` (recommended) or another Python environment manager
-
-## Quick Start
-
-1) Copy environment settings:
+1. Copy local environment defaults:
 
 ```bash
 cp .env.example .env
 ```
 
-2) Start local dependencies:
+2. Start local dependencies:
 
 ```bash
-docker compose up -d
+docker compose -f docker-compose.yml up -d redis postgres
 ```
 
-3) Create an API key:
+3. Create an admin API key:
 
 ```bash
 uv run bansho keys create --role admin
 ```
 
-4) Run the proxy:
+4. Point Bansho at an upstream MCP server and run the proxy:
 
 ```bash
+export UPSTREAM_TRANSPORT=stdio
+export UPSTREAM_CMD="uv run python demo/vulnerable_server.py"
 uv run bansho serve
 ```
 
-5) Run the dashboard:
+5. Optional: run the audit dashboard:
 
 ```bash
 uv run bansho dashboard
 ```
 
-## Configuration
+## Demo (Before vs After)
 
-Primary settings are in `.env`:
+Run the deterministic recording flow:
 
-- `BANSHO_LISTEN_HOST`, `BANSHO_LISTEN_PORT`
-- `UPSTREAM_TRANSPORT`, `UPSTREAM_CMD`, `UPSTREAM_URL`
-- `POSTGRES_DSN`, `REDIS_URL`
-- `DASHBOARD_HOST`, `DASHBOARD_PORT`
+```bash
+bash demo/run_before_after.sh
+```
 
-Policy configuration is loaded from `config/policies.yaml`.
+The script demonstrates:
+
+- **Before:** unauthorized sensitive tool call succeeds.
+- **After:** Bansho enforces `401`, `403`, `429`, and successful authorized `200`.
+- **Evidence:** audit row count increases and dashboard API returns events.
+
+## Policy Configuration
+
+- Default policy path: `config/policies.yaml`
+- Override policy path at runtime with `BANSHO_POLICY_PATH=/path/to/policy.yaml`
+- Demo runner uses `BANSHO_POLICY_PATH=demo/policies_demo.yaml`
+
+See `docs/policies.md` for schema and examples.
+
+## Architecture
+
+See `docs/architecture.md` for component roles, request flow, and data stores.
 
 ## Testing
 
