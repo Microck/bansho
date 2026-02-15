@@ -1,0 +1,23 @@
+roles:
+  admin:
+    allow:
+      - "*"
+  user:
+    allow:
+      - list_customers
+  readonly:
+    allow:
+      - list_customers
+
+rate_limits:
+  per_api_key:
+    requests: 10
+    window_seconds: 60
+  per_tool:
+    default:
+      requests: 5
+      window_seconds: 60
+    overrides:
+      list_customers:
+        requests: 1
+        window_seconds: 60
