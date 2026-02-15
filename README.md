@@ -32,24 +32,32 @@ cp .env.example .env
 docker compose -f docker-compose.yml up -d redis postgres
 ```
 
-3. Create an admin API key:
+3. Build the Go binaries:
 
 ```bash
-uv run bansho keys create --role admin
+mkdir -p bin
+go build -o ./bin/bansho ./cmd/bansho
+go build -o ./bin/vulnerable-server ./cmd/vulnerable-server
 ```
 
-4. Point Bansho at an upstream MCP server and run the proxy:
+4. Create an admin API key:
+
+```bash
+./bin/bansho keys create --role admin
+```
+
+5. Point Bansho at an upstream MCP server and run the proxy:
 
 ```bash
 export UPSTREAM_TRANSPORT=stdio
-export UPSTREAM_CMD="uv run python demo/vulnerable_server.py"
-uv run bansho serve
+export UPSTREAM_CMD="./bin/vulnerable-server"
+./bin/bansho serve
 ```
 
-5. Optional: run the audit dashboard:
+6. Optional: run the audit dashboard:
 
 ```bash
-uv run bansho dashboard
+./bin/bansho dashboard
 ```
 
 ## Demo (Before vs After)
@@ -81,5 +89,5 @@ See `docs/architecture.md` for component roles, request flow, and data stores.
 ## Testing
 
 ```bash
-uv run pytest
+go test ./...
 ```
