@@ -3,10 +3,10 @@
 ## Current Position
 
 Phase: 5 of 5 (Demo & Submit)
-Plan: 1 of 3
+Plan: 2 of 3
 Status: In progress
-Last activity: 2026-02-15 - Completed 05-01-PLAN.md
-Progress: ██████████████░░ 14/16 plans (88%)
+Last activity: 2026-02-15 - Completed 05-02-PLAN.md
+Progress: ███████████████░ 15/16 plans (94%)
 
 ---
 
@@ -18,7 +18,7 @@ Progress: ██████████████░░ 14/16 plans (88%)
 | 2 | Authentication | Complete | 3/3 plans |
 | 3 | Authorization & Rate Limiting | Complete | 4/4 plans |
 | 4 | Audit | Complete | 3/3 plans |
-| 5 | Demo & Submit | In progress | 1/3 plans |
+| 5 | Demo & Submit | In progress | 2/3 plans |
 
 ---
 
@@ -65,12 +65,14 @@ Progress: ██████████████░░ 14/16 plans (88%)
 | 04-03 | Require admin-role API keys for dashboard access | Keep audit event visibility restricted to operator-level credentials |
 | 05-01 | Add `--self-test` mode to vulnerable demo server | Keep before-state verification deterministic without transport coupling |
 | 05-01 | Spawn and teardown vulnerable server within attack client script | Make unauthorized demo execution reproducible in one command |
+| 05-02 | Keep recording-specific policies in `demo/policies_demo.yaml` | Protect default production-safe policy behavior while enabling deterministic demo outcomes |
+| 05-02 | Assert 401/403/429/200 via Sentinel stdio flow inside one runner script | Ensure fast, repeatable, judge-friendly evidence in a single command |
 
 ---
 
 ## Blockers/Concerns Carried Forward
 
-- None. Proceed with Phase 5 Plan 2 automation and recording artifacts.
+- None. Proceed with Phase 5 Plan 3 documentation and recording checklist finalization.
 
 ---
 
@@ -78,6 +80,7 @@ Progress: ██████████████░░ 14/16 plans (88%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-15 | Completed 05-02 deterministic before/after runner: docker readiness, key provisioning, 401/403/429/200 assertions, and dashboard audit evidence |
 | 2026-02-15 | Completed 05-01 vulnerable demo baseline: unauthenticated MCP server, attack client, and before-state quickstart docs |
 | 2026-02-14 | Completed 04-03 audit dashboard delivery: admin-protected HTTP/JSON audit event viewer with api_key_id/tool_name filters and CLI wiring |
 | 2026-02-14 | Completed 04-02 audit pipeline instrumentation: wired call-path audit events (401/403/200/failure) with integration regression coverage |
@@ -98,17 +101,17 @@ Progress: ██████████████░░ 14/16 plans (88%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/05-demo-submit/05-02-PLAN.md`.
-2. Build deterministic before/after runner with 401/403/429/200 and audit evidence assertions.
-3. Finalize submission docs and recording checklist in 05-03.
+1. Execute `.planning/phases/05-demo-submit/05-03-PLAN.md`.
+2. Finalize README, policy docs, and architecture docs for submission readiness.
+3. Create recording checklist and add hosted demo video URL placeholder.
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-15T04:43:27Z
-- Stopped at: Completed 05-01-PLAN.md
-- Resume file: `.planning/phases/05-demo-submit/05-02-PLAN.md`
+- Last session: 2026-02-15T04:49:40Z
+- Stopped at: Completed 05-02-PLAN.md
+- Resume file: `.planning/phases/05-demo-submit/05-03-PLAN.md`
 
 ---
 
