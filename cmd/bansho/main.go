@@ -8,6 +8,7 @@ import (
 
 	"github.com/microck/bansho/internal/auth"
 	"github.com/microck/bansho/internal/config"
+	"github.com/microck/bansho/internal/proxy"
 	"github.com/microck/bansho/internal/storage"
 	"github.com/microck/bansho/internal/ui"
 )
@@ -55,13 +56,16 @@ func printHelp() {
 }
 
 func runServe(_ []string) int {
-	_, err := config.Load()
+	settings, err := config.Load()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Config error: %v\n", err)
 		return 1
 	}
-	fmt.Fprintln(os.Stderr, "serve: not implemented yet")
-	return 1
+	if err := proxy.RunStdioGateway(settings); err != nil {
+		fmt.Fprintf(os.Stderr, "Serve error: %v\n", err)
+		return 1
+	}
+	return 0
 }
 
 func runDashboard(_ []string) int {
