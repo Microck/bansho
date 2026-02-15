@@ -6,9 +6,9 @@ Use this checklist before recording the hackathon demo.
 
 - [ ] Docker Desktop / Docker Engine is running.
 - [ ] Ports `5433`, `6379`, and `9100` are free on localhost.
-- [ ] `uv` is installed and dependencies are synced (`uv sync`).
+- [ ] Go toolchain is installed (`go version`).
 - [ ] Repository root is the current working directory.
-- [ ] Demo scripts exist: `demo/run_before_after.sh`, `demo/client_attack.py`, `demo/vulnerable_server.py`.
+- [ ] Demo runner exists: `demo/run_before_after.sh`.
 
 ## Recording Command Sequence
 

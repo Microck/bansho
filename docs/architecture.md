@@ -27,24 +27,24 @@ Upstream MCP Server
 
 ## Components
 
-- `src/bansho/proxy/bansho_server.py`
+- `internal/proxy/server.go`
   - MCP request handlers
   - Security pipeline order: `auth -> authz -> rate-limit -> forward`
   - Audit event emission for allow/deny/failure outcomes
 
-- `src/bansho/middleware/auth.py`
+- `internal/auth/api_keys.go`
   - Extracts API key from MCP request metadata headers/query
   - Resolves key identity + role from Postgres-backed key store
 
-- `src/bansho/middleware/authz.py`
+- `internal/policy/models.go` + `internal/proxy/server.go`
   - Loads role-to-tool allow rules from YAML policy
   - Filters `tools/list` visibility and gates `tools/call`
 
-- `src/bansho/middleware/rate_limit.py`
+- `internal/ratelimit/limiter.go`
   - Enforces per-key and per-tool quotas using Redis counters
   - Returns `429` when a window limit is exceeded
 
-- `src/bansho/audit/logger.py` and `src/bansho/ui/dashboard.py`
+- `internal/audit/logger.go` and `internal/ui/dashboard.go`
   - Persist audit events to Postgres (`audit_events`)
   - Expose dashboard API and HTML viewer for operator review
 
@@ -62,6 +62,6 @@ Upstream MCP Server
 
 The before/after demo uses:
 
-- Vulnerable upstream server: `demo/vulnerable_server.py`
+- Vulnerable upstream server: `cmd/vulnerable-server/main.go`
 - Bansho policy override: `BANSHO_POLICY_PATH=demo/policies_demo.yaml`
 - End-to-end runner: `bash demo/run_before_after.sh`

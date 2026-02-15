@@ -54,5 +54,5 @@ The recording flow uses `demo/policies_demo.yaml` with:
 Run with:
 
 ```bash
-BANSHO_POLICY_PATH=demo/policies_demo.yaml uv run bansho serve
+BANSHO_POLICY_PATH=demo/policies_demo.yaml ./bin/bansho serve
 ```
