@@ -9,6 +9,7 @@ import (
 	"github.com/microck/bansho/internal/auth"
 	"github.com/microck/bansho/internal/config"
 	"github.com/microck/bansho/internal/storage"
+	"github.com/microck/bansho/internal/ui"
 )
 
 var Version = "dev"
@@ -64,13 +65,16 @@ func runServe(_ []string) int {
 }
 
 func runDashboard(_ []string) int {
-	_, err := config.Load()
+	settings, err := config.Load()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Config error: %v\n", err)
 		return 1
 	}
-	fmt.Fprintln(os.Stderr, "dashboard: not implemented yet")
-	return 1
+	if err := ui.RunDashboard(settings); err != nil {
+		fmt.Fprintf(os.Stderr, "Dashboard error: %v\n", err)
+		return 1
+	}
+	return 0
 }
 
 func runKeys(args []string) int {
