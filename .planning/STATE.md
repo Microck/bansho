@@ -2,11 +2,11 @@
 
 ## Current Position
 
-Phase: 4 of 5 (Audit)
-Plan: 3 of 3
-Status: Phase complete
-Last activity: 2026-02-14 - Completed 04-03-PLAN.md
-Progress: █████████████░░░ 13/16 plans (81%)
+Phase: 5 of 5 (Demo & Submit)
+Plan: 1 of 3
+Status: In progress
+Last activity: 2026-02-15 - Completed 05-01-PLAN.md
+Progress: ██████████████░░ 14/16 plans (88%)
 
 ---
 
@@ -18,7 +18,7 @@ Progress: █████████████░░░ 13/16 plans (81%)
 | 2 | Authentication | Complete | 3/3 plans |
 | 3 | Authorization & Rate Limiting | Complete | 4/4 plans |
 | 4 | Audit | Complete | 3/3 plans |
-| 5 | Demo & Submit | Not Started | 0/3 plans |
+| 5 | Demo & Submit | In progress | 1/3 plans |
 
 ---
 
@@ -63,12 +63,14 @@ Progress: █████████████░░░ 13/16 plans (81%)
 | 04-02 | Restrict denied `response_json` to safe `{code,message}` metadata while storing gate details in `decision` | Preserve forensic detail without leaking sensitive failure internals in response payload storage |
 | 04-03 | Implement dashboard with stdlib HTTPServer bridged to async Postgres queries via anyio portal | Deliver audit visibility without introducing new web framework dependencies |
 | 04-03 | Require admin-role API keys for dashboard access | Keep audit event visibility restricted to operator-level credentials |
+| 05-01 | Add `--self-test` mode to vulnerable demo server | Keep before-state verification deterministic without transport coupling |
+| 05-01 | Spawn and teardown vulnerable server within attack client script | Make unauthorized demo execution reproducible in one command |
 
 ---
 
 ## Blockers/Concerns Carried Forward
 
-- None. Ready to transition to Phase 5 demo and submission work.
+- None. Proceed with Phase 5 Plan 2 automation and recording artifacts.
 
 ---
 
@@ -76,6 +78,7 @@ Progress: █████████████░░░ 13/16 plans (81%)
 
 | Date | Activity |
 |------|----------|
+| 2026-02-15 | Completed 05-01 vulnerable demo baseline: unauthenticated MCP server, attack client, and before-state quickstart docs |
 | 2026-02-14 | Completed 04-03 audit dashboard delivery: admin-protected HTTP/JSON audit event viewer with api_key_id/tool_name filters and CLI wiring |
 | 2026-02-14 | Completed 04-02 audit pipeline instrumentation: wired call-path audit events (401/403/200/failure) with integration regression coverage |
 | 2026-02-14 | Completed 04-01 audit primitives: bounded/redacted AuditEvent model and Postgres AuditLogger with regression tests |
@@ -95,18 +98,18 @@ Progress: █████████████░░░ 13/16 plans (81%)
 
 ## Next Steps
 
-1. Execute `.planning/phases/05-demo-submit/05-01-PLAN.md`.
-2. Build the vulnerable MCP demo server and before/after security walkthrough.
-3. Continue assembling submission artifacts (README and demo video).
+1. Execute `.planning/phases/05-demo-submit/05-02-PLAN.md`.
+2. Build deterministic before/after runner with 401/403/429/200 and audit evidence assertions.
+3. Finalize submission docs and recording checklist in 05-03.
 
 ---
 
 ## Session Continuity
 
-- Last session: 2026-02-14T01:33:27Z
-- Stopped at: Completed 04-03-PLAN.md
-- Resume file: `.planning/phases/05-demo-submit/05-01-PLAN.md`
+- Last session: 2026-02-15T04:43:27Z
+- Stopped at: Completed 05-01-PLAN.md
+- Resume file: `.planning/phases/05-demo-submit/05-02-PLAN.md`
 
 ---
 
-*Last updated: 2026-02-14*
+*Last updated: 2026-02-15*
