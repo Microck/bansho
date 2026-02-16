@@ -3,7 +3,9 @@
 Bansho is an MCP security gateway that sits between MCP clients and upstream MCP servers.
 It adds API-key authentication, role-based tool authorization, rate limiting, and audit logging without requiring upstream code changes.
 
-Demo video: https://example.com/bansho-demo-video
+Built for: Microsoft AI Dev Days Hackathon 2026
+Categories: Best Enterprise Solution, AI Apps and Agents
+Demo video: <paste hosted link>
 
 ## Why It Matters
 
@@ -20,6 +22,10 @@ Bansho enforces a deny-first security posture while preserving normal MCP protoc
 
 ## Quickstart
 
+Prereqs:
+- Go
+- Docker
+
 1. Copy local environment defaults:
 
 ```bash
@@ -32,7 +38,7 @@ cp .env.example .env
 docker compose -f docker-compose.yml up -d redis postgres
 ```
 
-3. Build the Go binaries:
+3. Build binaries:
 
 ```bash
 mkdir -p bin
@@ -46,7 +52,7 @@ go build -o ./bin/vulnerable-server ./cmd/vulnerable-server
 ./bin/bansho keys create --role admin
 ```
 
-5. Point Bansho at an upstream MCP server and run the proxy:
+5. Run Bansho against an upstream MCP server:
 
 ```bash
 export UPSTREAM_TRANSPORT=stdio
@@ -54,40 +60,42 @@ export UPSTREAM_CMD="./bin/vulnerable-server"
 ./bin/bansho serve
 ```
 
-6. Optional: run the audit dashboard:
-
-```bash
-./bin/bansho dashboard
-```
-
 ## Demo (Before vs After)
 
-Run the deterministic recording flow:
+Run the deterministic end-to-end demo flow:
 
 ```bash
 bash demo/run_before_after.sh
 ```
 
-The script demonstrates:
-
-- **Before:** unauthorized sensitive tool call succeeds.
-- **After:** Bansho enforces `401`, `403`, `429`, and successful authorized `200`.
-- **Evidence:** audit row count increases and dashboard API returns events.
+This script demonstrates:
+- Before: unauthorized sensitive tool call succeeds.
+- After: Bansho enforces `401`, `403`, `429`, and a successful authorized `200`.
+- Evidence: audit row count increases and dashboard API returns events.
 
 ## Policy Configuration
 
 - Default policy path: `config/policies.yaml`
-- Override policy path at runtime with `BANSHO_POLICY_PATH=/path/to/policy.yaml`
-- Demo runner uses `BANSHO_POLICY_PATH=demo/policies_demo.yaml`
+- Override at runtime: `BANSHO_POLICY_PATH=/path/to/policy.yaml`
+- Demo runner uses: `BANSHO_POLICY_PATH=demo/policies_demo.yaml`
 
-See `docs/policies.md` for schema and examples.
+Schema and examples: `docs/policies.md`
 
 ## Architecture
 
-See `docs/architecture.md` for component roles, request flow, and data stores.
+Component roles, request flow, and data stores: `docs/architecture.md`
 
-## Testing
+## Verification
 
 ```bash
 go test ./...
 ```
+
+## Safety
+
+The demo includes an intentionally insecure before-state MCP server under `demo/`.
+Only run the vulnerable server locally in a controlled environment.
+
+## License
+
+Apache-2.0 (see `LICENSE`).
