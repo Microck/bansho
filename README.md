@@ -6,25 +6,27 @@ Bansho is an MCP security gateway that sits between MCP clients and upstream MCP
 
 It adds API-key authentication, role-based tool authorization, rate limiting, and audit logging without requiring upstream code changes.
 
-<!-- top-readme: begin -->
-## Usage
+## Quickstart
 
-## CLI Reference
+Prereqs:
+- Go
+- Docker
 
-## Dashboard / Audit API
+```bash
+cp .env.example .env
 
-## Development
+docker compose up -d redis postgres
 
-## Troubleshooting
+mkdir -p bin
+go build -o ./bin/bansho ./cmd/bansho
+go build -o ./bin/vulnerable-server ./cmd/vulnerable-server
 
-## Support / Community
-- [Issues](https://github.com/microck/bansho/issues)
+./bin/bansho keys create --role admin
 
-## Changelog / Releases
-- [Releases](https://github.com/microck/bansho/releases)
-
-## Roadmap
-<!-- top-readme: end -->
+export UPSTREAM_TRANSPORT=stdio
+export UPSTREAM_CMD="./bin/vulnerable-server"
+./bin/bansho serve
+```
 
 ## Features
 
@@ -36,70 +38,42 @@ It adds API-key authentication, role-based tool authorization, rate limiting, an
 
 ## Installation
 
-Prereqs:
-- Go
-- Docker
+TODO: document exact Go version and any platform notes.
 
-## Quick Start
+## Usage
 
-1. Copy local defaults:
+TODO: add examples for stdio vs HTTP upstream, and how clients provide the API key.
 
-```bash
-cp .env.example .env
-```
+## CLI Reference
 
-2. Start dependencies:
-
-```bash
-docker compose up -d redis postgres
-```
-
-3. Build binaries:
-
-```bash
-mkdir -p bin
-go build -o ./bin/bansho ./cmd/bansho
-go build -o ./bin/vulnerable-server ./cmd/vulnerable-server
-```
-
-4. Create an admin API key:
-
-```bash
-./bin/bansho keys create --role admin
-```
-
-5. Run the proxy:
-
-```bash
-export UPSTREAM_TRANSPORT=stdio
-export UPSTREAM_CMD="./bin/vulnerable-server"
-./bin/bansho serve
-```
-
-## Demo
-
-This repo includes an intentionally insecure before-state to demonstrate the value of the gateway.
-
-- Video: TBD
-- Deterministic runner:
-
-```bash
-bash demo/run_before_after.sh
-```
+TODO: document flags and examples:
+- `bansho serve`
+- `bansho keys create|list|revoke`
 
 ## Configuration
 
 Policy configuration:
-
 - Default policy path: `config/policies.yaml`
 - Override at runtime: `BANSHO_POLICY_PATH=/path/to/policy.yaml`
 - Demo runner uses: `BANSHO_POLICY_PATH=demo/policies_demo.yaml`
 
 See `docs/policies.md` for schema and examples.
 
-## Architecture
+## Dashboard / Audit API
 
-See `docs/architecture.md` for component roles, request flow, and data stores.
+TODO: list endpoints + example curl commands.
+
+## Demo
+
+This repo includes an intentionally insecure before-state to demonstrate the value of the gateway.
+
+```bash
+bash demo/run_before_after.sh
+```
+
+## Development
+
+TODO: document local dev loop (run, reload, policy iteration).
 
 ## Testing
 
@@ -107,15 +81,31 @@ See `docs/architecture.md` for component roles, request flow, and data stores.
 go test ./...
 ```
 
-## Security
+## Troubleshooting
 
-The demo includes a deliberately vulnerable server under `demo/`.
-Only run the vulnerable server locally in a controlled environment.
+TODO: common issues (ports, DSNs, compose not up, policy parse errors).
 
 ## Contributing
 
 Issues and pull requests are welcome.
 
+## Support / Community
+
+TODO: add Issues/Discussions links.
+
+## Security
+
+The demo includes a deliberately vulnerable server under `demo/`.
+Only run the vulnerable server locally in a controlled environment.
+
 ## License
 
 Apache-2.0 (see `LICENSE`).
+
+## Changelog / Releases
+
+TODO: link to GitHub Releases or add `CHANGELOG.md`.
+
+## Roadmap
+
+TODO: add 3-5 near-term improvements (or link to issues/milestones).
