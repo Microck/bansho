@@ -6,6 +6,26 @@ Bansho is an MCP security gateway that sits between MCP clients and upstream MCP
 
 It adds API-key authentication, role-based tool authorization, rate limiting, and audit logging without requiring upstream code changes.
 
+<!-- top-readme: begin -->
+## Usage
+
+## CLI Reference
+
+## Dashboard / Audit API
+
+## Development
+
+## Troubleshooting
+
+## Support / Community
+- [Issues](https://github.com/microck/bansho/issues)
+
+## Changelog / Releases
+- [Releases](https://github.com/microck/bansho/releases)
+
+## Roadmap
+<!-- top-readme: end -->
+
 ## Features
 
 - MCP passthrough proxy (stdio and HTTP upstream transports)
