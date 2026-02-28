@@ -1,50 +1,81 @@
-# Planning docs are tracked (do not ignore `.planning/`)
+# ─── Go ───────────────────────────────────────────────────────────────────────
 
-# Python bytecode / caches
+# Compiled binaries and build output
+bin/
+dist/
+build/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go test artifacts
+*.test
+*.out
+coverage.out
+coverage.html
+
+# Go vendor directory (if using modules, vendor is optional)
+vendor/
+
+# ─── Environment / secrets ────────────────────────────────────────────────────
+
+.env
+.env.*
+!.env.example
+local.settings.json
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+
+*.log
+*.log.*
+
+# ─── Python (tooling / scripts) ───────────────────────────────────────────────
+
 __pycache__/
 *.py[cod]
 *.pyd
 *.so
 
-# Test / typecheck caches
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .coverage
 htmlcov/
 
-# Virtual environments
 .venv/
 venv/
 ENV/
 env/
 
-# Package/build artifacts
 *.egg-info/
-dist/
-build/
-bin/
 
-# Environment files (never commit secrets)
-.env
-.env.*
-!.env.example
+# ─── Editor / OS ──────────────────────────────────────────────────────────────
 
-# Editor/OS
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
 
-# Node (if any tools get added later)
+# ─── Node (if any JS tooling is added later) ──────────────────────────────────
+
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Generated artifacts
+# ─── Test / CI artifacts ──────────────────────────────────────────────────────
+
 artifacts/
 recordings/
 test-results/
 playwright-report/
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+
+# Do NOT ignore .planning/ — planning docs are tracked
