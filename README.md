@@ -5,9 +5,9 @@
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-**An MCP security gateway — adds auth, rate limits, and audit logging between your AI client and any MCP server.**
+**An MCP security gateway. Adds auth, rate limits, and audit logging between your AI client and any MCP server.**
 
-Bansho sits in front of any MCP server and adds API-key authentication, role-based tool authorization, Redis rate limiting, and PostgreSQL audit logging — all without touching a line of upstream code.
+Bansho sits in front of any MCP server and adds API-key authentication, role-based tool authorization, Redis rate limiting, and PostgreSQL audit logging, all without touching a line of upstream code.
 
 ---
 
@@ -21,11 +21,11 @@ MCP Client (Claude Desktop, Cursor, etc.)
 ┌──────────────────────────────────────────────────────────────┐
 │                       Bansho Gateway                         │
 │                                                              │
-│  1. Auth      — resolve API key → role (Postgres api_keys)   │
-│  2. AuthZ     — check role against YAML tool allow-list       │
-│  3. Rate limit — fixed-window counter (Redis)                │
-│  4. Audit     — persist event to Postgres audit_events       │
-│  5. Forward   — pass allowed request to upstream             │
+│  1. Auth      - resolve API key → role (Postgres api_keys)   │
+│  2. AuthZ     - check role against YAML tool allow-list       │
+│  3. Rate limit - fixed-window counter (Redis)                │
+│  4. Audit     - persist event to Postgres audit_events       │
+│  5. Forward   - pass allowed request to upstream             │
 └──────────────────────────────────────────────────────────────┘
         │  stdio or HTTP/SSE upstream
         ▼
@@ -43,14 +43,14 @@ Upstream MCP Server (any MCP server, unchanged)
 
 ## Features
 
-- **MCP passthrough proxy** — stdio and HTTP upstream transports; protocol-transparent
-- **API key authentication** — PBKDF2-hashed keys stored in Postgres; extracted from `Authorization: Bearer`, `X-API-Key`, or `?api_key=`
-- **Role-based tool authorization** — YAML policy maps roles to allowed tools; `tools/list` visibility is filtered per-caller
-- **Redis fixed-window rate limiting** — separate per-key and per-tool quotas; per-tool overrides supported
-- **PostgreSQL audit log** — every tool call persisted with timestamp, key ID, role, method, status, latency, and full decision payload
-- **Audit dashboard** — lightweight HTML UI + JSON API (`GET /api/events`) for operator review
-- **Fail-closed** — policy load failure, missing key, unknown role, and exceeded limits all deny by default
-- **Zero upstream changes** — wrap any existing MCP server without modifying it
+- **MCP passthrough proxy** - stdio and HTTP upstream transports; protocol-transparent
+- **API key authentication** - PBKDF2-hashed keys stored in Postgres; extracted from `Authorization: Bearer`, `X-API-Key`, or `?api_key=`
+- **Role-based tool authorization** - YAML policy maps roles to allowed tools; `tools/list` visibility is filtered per-caller
+- **Redis fixed-window rate limiting** - separate per-key and per-tool quotas; per-tool overrides supported
+- **PostgreSQL audit log** - every tool call persisted with timestamp, key ID, role, method, status, latency, and full decision payload
+- **Audit dashboard** - lightweight HTML UI + JSON API (`GET /api/events`) for operator review
+- **Fail-closed** - policy load failure, missing key, unknown role, and exceeded limits all deny by default
+- **Zero upstream changes** - wrap any existing MCP server without modifying it
 
 ---
 
@@ -283,14 +283,14 @@ rate_limits:
 
 - Unknown or missing roles are **denied by default**.
 - `allow: ["*"]` grants wildcard access to all tools for that role.
-- `tools/list` responses are filtered — callers only see tools their role allows.
+- `tools/list` responses are filtered - callers only see tools their role allows.
 - Per-tool overrides in `rate_limits.per_tool.overrides` take precedence over `default`.
 - If the policy file fails to load, Bansho **fails closed** at startup.
 - Override the policy path at runtime: `BANSHO_POLICY_PATH=/path/to/custom.yaml`
 
 ---
 
-## Demo — Before / After
+## Demo: Before / After
 
 The repo includes an intentionally vulnerable MCP server to demonstrate the value of the gateway.
 
@@ -307,9 +307,9 @@ bash demo/run_before_after.sh
 The script:
 1. Starts Redis + Postgres via Docker Compose and waits for health checks
 2. Builds all Go binaries (`bansho`, `vulnerable-server`, `demo-attack`, `demo-after`)
-3. Runs the **before-state** attack — confirms the vulnerable server allows unauthorized calls
+3. Runs the **before-state** attack - confirms the vulnerable server allows unauthorized calls
 4. Creates `readonly` and `admin` API keys
-5. Runs the **after-state** checks through Bansho — asserts `401`, `403`, `429`, and `200` outcomes
+5. Runs the **after-state** checks through Bansho - asserts `401`, `403`, `429`, and `200` outcomes
 6. Verifies audit rows increased in Postgres
 7. Starts the dashboard and confirms the events API returns audit evidence
 
@@ -414,10 +414,10 @@ graph TD
 
 Every `tools/call` request passes through four stages in sequence:
 
-1. **Auth** — extract API key from request metadata; verify against Postgres `api_keys`; reject with `401` on failure
-2. **AuthZ** — check the resolved role against the YAML policy allow-list for the requested tool; reject with `403` on mismatch
-3. **Rate limit** — increment per-key and per-tool Redis counters; reject with `429` when a window is exceeded
-4. **Forward** — pass the request to the upstream MCP server and return its response
+1. **Auth** - extract API key from request metadata; verify against Postgres `api_keys`; reject with `401` on failure
+2. **AuthZ** - check the resolved role against the YAML policy allow-list for the requested tool; reject with `403` on mismatch
+3. **Rate limit** - increment per-key and per-tool Redis counters; reject with `429` when a window is exceeded
+4. **Forward** - pass the request to the upstream MCP server and return its response
 
 An audit event is emitted for every call regardless of outcome, capturing the full decision payload for each stage.
 
@@ -524,7 +524,7 @@ Issues and pull requests are welcome.
 3. Make your changes and add tests
 4. Open a pull request against `main`
 
-Please keep pull requests focused. Security-sensitive changes (auth, key hashing, policy evaluation) require extra care — include a clear description of the threat model impact.
+Please keep pull requests focused. Security-sensitive changes (auth, key hashing, policy evaluation) require extra care. Include a clear description of the threat model impact.
 
 ---
 
@@ -539,7 +539,7 @@ Please keep pull requests focused. Security-sensitive changes (auth, key hashing
 
 ## License
 
-Apache-2.0 — see [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE).
 
 ---
 
