@@ -157,6 +157,16 @@ tr.detail-row td{padding:0;border-bottom:1px solid var(--border-strong)}
 .col-vis-menu label:hover{background:var(--accent-dim)}
 .col-vis-menu input[type="checkbox"]{accent-color:var(--brand)}
 
+/* ── table column hide classes (0..7) ── */
+#evt-table.hide-col-0 thead th:nth-child(1),#evt-table.hide-col-0 tbody tr.evt-row td:nth-child(1){display:none}
+#evt-table.hide-col-1 thead th:nth-child(2),#evt-table.hide-col-1 tbody tr.evt-row td:nth-child(2){display:none}
+#evt-table.hide-col-2 thead th:nth-child(3),#evt-table.hide-col-2 tbody tr.evt-row td:nth-child(3){display:none}
+#evt-table.hide-col-3 thead th:nth-child(4),#evt-table.hide-col-3 tbody tr.evt-row td:nth-child(4){display:none}
+#evt-table.hide-col-4 thead th:nth-child(5),#evt-table.hide-col-4 tbody tr.evt-row td:nth-child(5){display:none}
+#evt-table.hide-col-5 thead th:nth-child(6),#evt-table.hide-col-5 tbody tr.evt-row td:nth-child(6){display:none}
+#evt-table.hide-col-6 thead th:nth-child(7),#evt-table.hide-col-6 tbody tr.evt-row td:nth-child(7){display:none}
+#evt-table.hide-col-7 thead th:nth-child(8),#evt-table.hide-col-7 tbody tr.evt-row td:nth-child(8){display:none}
+
 /* ── density: comfortable (default 3px → 5px padding) ── */
 body.density-comfortable td{padding:5px 8px}
 body.density-comfortable .detail-pane{padding:8px 14px 10px 14px}
@@ -439,13 +449,12 @@ tbody.querySelectorAll('tr[data-idx]').forEach(function(r){r.classList.add('evt-
   }
   function applyVis(){
     visible.forEach(function(v,i){
-      var d=v?'':'none';
-      if(cols[i])cols[i].style.visibility=v?'visible':'collapse';
-      if(ths[i])ths[i].style.display=d;
-      tbody.querySelectorAll('tr.evt-row').forEach(function(r){
-        var tds=r.querySelectorAll('td');
-        if(tds[i])tds[i].style.display=d;
-      });
+      table.classList.toggle('hide-col-'+i,!v);
+      if(cols[i])cols[i].style.display=v?'table-column':'none';
+    });
+    /* keep internal payload column hidden at all times */
+    tbody.querySelectorAll('tr.evt-row td.detail-json').forEach(function(td){
+      td.style.display='none';
     });
   }
   buildMenu();applyVis();
