@@ -412,15 +412,15 @@ Each event's `decision` object records the outcome of every pipeline stage (`aut
 
 ```mermaid
 graph TD
-    Client["MCP Client\n(Claude Desktop / Cursor / custom)"]
-    Gateway["Bansho Gateway\n(bansho serve)"]
-    Auth["Auth middleware\napi_keys table lookup\nPBKDF2 verify"]
-    AuthZ["AuthZ middleware\nYAML role policy\ntools/list filter"]
-    RL["Rate limiter\nRedis fixed-window\nper-key + per-tool"]
-    Audit["Audit logger\naudit_events table\nstatus + decision JSON"]
-    Upstream["Upstream MCP Server\n(stdio or HTTP)"]
-    PG[("PostgreSQL\napi_keys\naudit_events")]
-    Redis[("Redis\nrate-limit counters")]
+    Client["MCP Client<br>(Claude Desktop / Cursor / custom)"]
+    Gateway["Bansho Gateway<br>(bansho serve)"]
+    Auth["Auth middleware<br>api_keys table lookup<br>PBKDF2 verify"]
+    AuthZ["AuthZ middleware<br>YAML role policy<br>tools/list filter"]
+    RL["Rate limiter<br>Redis fixed-window<br>per-key + per-tool"]
+    Audit["Audit logger<br>audit_events table<br>status + decision JSON"]
+    Upstream["Upstream MCP Server<br>(stdio or HTTP)"]
+    PG[("PostgreSQL<br>api_keys<br>audit_events")]
+    Redis[("Redis<br>rate-limit counters")]
 
     Client -->|"JSON-RPC + API key"| Gateway
     Gateway --> Auth
