@@ -7,7 +7,7 @@
 
 **Drop Bansho in front of any MCP server to get API-key auth, role-scoped tool access, rate limiting, and a full audit log with zero upstream changes.**
 
-Inspired by the historical Japanese **Bansho** (番所) (the guardhouses and security checkpoints of the Edo period) this project serves as a modern security checkpoint for the Model Context Protocol.
+Named after the historical Japanese **Bansho** (番所), the guardhouses and security checkpoints of the Edo period, this project serves as a modern security checkpoint for the Model Context Protocol.
 
 Bansho sits in front of any MCP server and adds API-key authentication, role-based tool authorization, Redis rate limiting, and PostgreSQL audit logging, all without touching a line of upstream code.
 
