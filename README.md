@@ -1,5 +1,5 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/logo-horizontal-dark.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/logo-horizontal.svg">
   <img alt="Bansho" src="docs/brand/logo-horizontal.svg" width="640">
 </picture>
 
@@ -7,9 +7,11 @@
 
 **An MCP security gateway. Adds auth, rate limits, and audit logging between your AI client and any MCP server.**
 
-Inspired by the historical Japanese **Bansho** (番所)—the guardhouses and security checkpoints of the Edo period—this project serves as a modern security checkpoint for the Model Context Protocol.
+Inspired by the historical Japanese **Bansho** (番所) (the guardhouses and security checkpoints of the Edo period) this project serves as a modern security checkpoint for the Model Context Protocol.
 
 Bansho sits in front of any MCP server and adds API-key authentication, role-based tool authorization, Redis rate limiting, and PostgreSQL audit logging, all without touching a line of upstream code.
+
+![screenshot-dashboard](https://github.com/user-attachments/assets/7b0496c4-168d-49c1-ab02-392133d542bc)
 
 ---
 
