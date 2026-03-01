@@ -5,7 +5,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-**An MCP security gateway. Adds auth, rate limits, and audit logging between your AI client and any MCP server.**
+**Drop Bansho in front of any MCP server to get API-key auth, role-scoped tool access, rate limiting, and a full audit log with zero upstream changes.**
 
 Inspired by the historical Japanese **Bansho** (番所) (the guardhouses and security checkpoints of the Edo period) this project serves as a modern security checkpoint for the Model Context Protocol.
 
@@ -18,7 +18,7 @@ Bansho sits in front of any MCP server and adds API-key authentication, role-bas
 ## How It Works
 
 ```
-MCP Client (Claude Desktop, Cursor, etc.)
+MCP Client (Claude Code, OpenCode, Claude Desktop, Pi, Cursor, etc.)
         │  JSON-RPC over stdio  (bansho serve)
         │  API key in metadata headers / X-API-Key
         ▼
@@ -26,7 +26,7 @@ MCP Client (Claude Desktop, Cursor, etc.)
 │                       Bansho Gateway                         │
 │                                                              │
 │  1. Auth      - resolve API key → role (Postgres api_keys)   │
-│  2. AuthZ     - check role against YAML tool allow-list       │
+│  2. AuthZ     - check role against YAML tool allow-list      │
 │  3. Rate limit - fixed-window counter (Redis)                │
 │  4. Audit     - persist event to Postgres audit_events       │
 │  5. Forward   - pass allowed request to upstream             │
