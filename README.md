@@ -50,7 +50,7 @@ Upstream MCP Server (any MCP server, unchanged)
 - **Role-based tool authorization** - YAML policy maps roles to allowed tools; `tools/list` visibility is filtered per-caller
 - **Redis fixed-window rate limiting** - separate per-key and per-tool quotas; per-tool overrides supported
 - **PostgreSQL audit log** - every tool call persisted with timestamp, key ID, role, method, status, latency, and full decision payload
-- **Audit dashboard** - lightweight HTML UI + JSON API (`GET /api/events`) for operator review
+- **Audit dashboard** - dense cockpit-style HTML UI with sorting, row expansion, export, keyboard shortcuts, and a JSON API (`GET /api/events`)
 - **Fail-closed** - policy load failure, missing key, unknown role, and exceeded limits all deny by default
 - **Zero upstream changes** - wrap any existing MCP server without modifying it
 
@@ -337,7 +337,24 @@ All endpoints require an `admin` API key (via `X-API-Key`, `Authorization: Beare
 
 ### `GET /dashboard`
 
-HTML audit table with filter controls (API key ID, tool name, limit).
+A dense, cockpit-style HTML dashboard for real-time audit monitoring. Server-rendered Go templates with vanilla JS (no framework, no build step). Supports dark and light themes.
+
+**Dashboard features:**
+
+| Feature | Description |
+|---------|-------------|
+| **Dark / light theme** | Toggle in the header; persisted in localStorage |
+| **Inline KPI counters** | Events, OK, Denied, and Rate-limited counts in the header bar |
+| **Filter bar** | Filter by API key ID, tool name, and result limit |
+| **Row-level status coloring** | Rows tinted green/red/yellow by status code, with a 3px left accent border. Togglable |
+| **Column sorting** | Click any column header to sort ascending/descending. Numeric sort for status and latency |
+| **Row expansion** | Click a row to expand an inline detail pane showing pretty-printed Decision, Request, and Response JSON in a 3-column grid |
+| **Auto-refresh** | Interval selector (off / 5s / 10s / 30s / 60s); persisted in localStorage |
+| **CSV and JSON export** | Download the current filtered view as `bansho-events.csv` or `bansho-events.json` |
+| **Column visibility** | Gear menu to show/hide individual columns; persisted |
+| **Density toggle** | Switch between compact (3px rows) and comfortable (5px rows) padding |
+| **Resizable columns** | Drag column borders to resize |
+| **Keyboard shortcuts** | `?` help overlay, `/` focus search, `j`/`k` row navigation, `Enter` expand row, `Esc` close, `r` refresh, `d` toggle theme |
 
 ### `GET /api/events`
 
@@ -377,13 +394,15 @@ curl -H "X-API-Key: bsk_yourAdminKey" \
         "auth":  { "allowed": true,  "api_key_id": "3f2b1c0a-...", "role": "readonly" },
         "authz": { "allowed": false, "role": "readonly", "reason": "tool_not_allowed_for_role" },
         "rate":  { "allowed": false, "reason": "not_evaluated" }
-      }
+      },
+      "request_json": { "method": "tools/call", "params": { "name": "delete_customer" } },
+      "response_json": { "error": { "code": 403, "message": "Forbidden" } }
     }
   ]
 }
 ```
 
-Each event's `decision` object records the outcome of every pipeline stage (`auth`, `authz`, `rate`).
+Each event's `decision` object records the outcome of every pipeline stage (`auth`, `authz`, `rate`). The `request_json` and `response_json` fields contain the original MCP request and the upstream response.
 
 ---
 
@@ -439,7 +458,7 @@ bansho/
 │   ├── ratelimit/         # Redis fixed-window rate limiter
 │   ├── storage/           # Postgres pool, Redis client, schema migrations
 │   ├── audit/             # Audit event model, logger, query
-│   ├── ui/                # Dashboard HTTP server and JSON API
+│   ├── ui/                # Dashboard HTTP server, HTML template, and embedded SVG logos
 │   └── config/            # Environment-variable based settings loader
 ├── config/
 │   └── policies.yaml      # Default policy (admin: *, others: empty)

@@ -1,10 +1,13 @@
 package ui
 
 import (
+	"bytes"
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"html"
+	"html/template"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -16,6 +19,9 @@ import (
 	"github.com/microck/bansho/internal/config"
 	"github.com/microck/bansho/internal/storage"
 )
+
+//go:embed dashboard.html banshologo.svg banshohorizontal.svg
+var uiFS embed.FS
 
 const (
 	defaultEventLimit = 50
@@ -187,6 +193,13 @@ func writeHTML(w http.ResponseWriter, status int, body string) {
 	_, _ = w.Write([]byte(body))
 }
 
+type templateData struct {
+	HeaderHTML    template.HTML
+	FilterBarHTML template.HTML
+	RowsHTML      template.HTML
+	FooterHTML    template.HTML
+}
+
 func renderDashboardHTML(authCtx DashboardAuthContext, filters dashboardFilters, events []audit.RecentEvent) string {
 	query := url.Values{}
 	query.Set("limit", fmt.Sprintf("%d", filters.Limit))
@@ -198,24 +211,49 @@ func renderDashboardHTML(authCtx DashboardAuthContext, filters dashboardFilters,
 	}
 	apiHref := "/api/events?" + query.Encode()
 
-	rows := ""
+	// Read the horizontal logo SVG (contains wordmark)
+	logoSVG, _ := uiFS.ReadFile("banshohorizontal.svg")
+
+	// ── Count stats for header KPI ──
+	totalEvents := len(events)
+	var okCount, errCount, rateCount int
 	for _, e := range events {
-		decisionJSON, _ := json.Marshal(e.Decision)
-		rows += "<tr>" +
-			"<td>" + html.EscapeString(e.TS) + "</td>" +
-			"<td>" + html.EscapeString(deref(e.APIKeyID)) + "</td>" +
-			"<td>" + html.EscapeString(e.Role) + "</td>" +
-			"<td>" + html.EscapeString(e.Method) + "</td>" +
-			"<td>" + html.EscapeString(e.ToolName) + "</td>" +
-			"<td>" + fmt.Sprintf("%d", e.Status) + "</td>" +
-			"<td>" + fmt.Sprintf("%d", e.LatencyMS) + "</td>" +
-			"<td><code>" + html.EscapeString(string(decisionJSON)) + "</code></td>" +
-			"</tr>"
-	}
-	if rows == "" {
-		rows = "<tr><td colspan='8'>No audit events found for the current filters.</td></tr>"
+		if e.Status >= 200 && e.Status <= 299 {
+			okCount++
+		} else if e.Status == 401 || e.Status == 403 || e.Status >= 500 {
+			errCount++
+		} else if e.Status == 429 {
+			rateCount++
+		}
 	}
 
+	// ── Build header (logo + inline KPI + key badge + theme toggle) ──
+	keyShort := authCtx.APIKeyID
+	if len(keyShort) > 8 {
+		keyShort = keyShort[:8]
+	}
+	headerHTML := fmt.Sprintf(
+		`<div class="hdr">`+
+			`<div class="hdr-logo">%s</div>`+
+			`<div class="hdr-sep"></div>`+
+			`<div class="hdr-kpi">`+
+			`<div class="hdr-kpi-item"><span class="hdr-kpi-label">Events</span><span class="hdr-kpi-val">%d</span></div>`+
+			`<div class="hdr-kpi-item"><span class="hdr-kpi-label">OK</span><span class="hdr-kpi-val">%d</span></div>`+
+			`<div class="hdr-kpi-item"><span class="hdr-kpi-label">Denied</span><span class="hdr-kpi-val">%d</span></div>`+
+			`<div class="hdr-kpi-item"><span class="hdr-kpi-label">Rate</span><span class="hdr-kpi-val">%d</span></div>`+
+			`</div>`+
+			`<div class="hdr-spacer"></div>`+
+			`<span class="hdr-badge">%s…</span>`+
+			`<div class="hdr-toggle">`+
+			`<button data-theme="dark" onclick="setTheme('dark')">Dark</button>`+
+			`<button data-theme="light" onclick="setTheme('light')">Light</button>`+
+			`</div>`+
+			`</div>`,
+		string(logoSVG),
+		totalEvents, okCount, errCount, rateCount,
+		html.EscapeString(keyShort))
+
+	// ── Build filter bar ──
 	apiKeyIDValue := ""
 	if filters.APIKeyID != nil {
 		apiKeyIDValue = *filters.APIKeyID
@@ -224,42 +262,135 @@ func renderDashboardHTML(authCtx DashboardAuthContext, filters dashboardFilters,
 	if filters.ToolName != nil {
 		toolNameValue = *filters.ToolName
 	}
+	filterBarHTML := fmt.Sprintf(
+		`<form class="fbar" method="get" action="/dashboard">`+
+			`<label>Key</label>`+
+			`<input type="text" name="api_key_id" placeholder="uuid…" value="%s">`+
+			`<label>Tool</label>`+
+			`<input type="text" name="tool_name" placeholder="tool…" value="%s">`+
+			`<label>Limit</label>`+
+			`<input type="number" class="narrow" min="1" max="%d" name="limit" value="%d">`+
+			`<button type="submit" class="fbar-btn">Filter</button>`+
+			`<div class="fbar-sep"></div>`+
+			`<div class="fbar-toggle"><input type="checkbox" id="toggle-row-color" checked><span class="sw" onclick="this.previousElementSibling.click()"></span><label for="toggle-row-color">Row color</label></div>`+
+			`<div class="fbar-sep"></div>`+
+			`<label>Refresh</label>`+
+			`<select id="auto-refresh" class="fbar-select">`+
+			`<option value="0">Off</option>`+
+			`<option value="5">5s</option>`+
+			`<option value="10">10s</option>`+
+			`<option value="30">30s</option>`+
+			`<option value="60">60s</option>`+
+			`</select>`+
+			`<div class="fbar-sep"></div>`+
+			`<div class="fbar-toggle"><input type="checkbox" id="toggle-density" checked><span class="sw" onclick="this.previousElementSibling.click()"></span><label for="toggle-density">Compact</label></div>`+
+			`<span class="fbar-spacer"></span>`+
+			`<button type="button" class="fbar-icon-btn" id="btn-col-vis" title="Column visibility">⚙</button>`+
+			`<button type="button" class="fbar-icon-btn" id="btn-export-csv" title="Export CSV">↓csv</button>`+
+			`<button type="button" class="fbar-icon-btn" id="btn-export-json" title="Export JSON">↓json</button>`+
+			`<button type="button" class="fbar-icon-btn" id="btn-kbd-help" title="Keyboard shortcuts (?)">?</button>`+
+			`<a href="%s" class="fbar-link">API</a>`+
+			`</form>`+
+			`<div id="col-vis-menu" class="col-vis-menu" style="display:none"></div>`,
+		html.EscapeString(apiKeyIDValue),
+		html.EscapeString(toolNameValue),
+		maxEventLimit,
+		filters.Limit,
+		html.EscapeString(apiHref))
 
-	return "<!doctype html>" +
-		"<html lang='en'>" +
-		"<head>" +
-		"<meta charset='utf-8'>" +
-		"<meta name='viewport' content='width=device-width, initial-scale=1'>" +
-		"<title>MCP Bansho Audit Dashboard</title>" +
-		"<style>" +
-		"body{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;margin:24px;background:#f5f7fb;color:#111827;}" +
-		"h1{margin:0 0 12px 0;font-size:24px;}" +
-		"p{margin:0 0 16px 0;}" +
-		"form{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 16px 0;padding:12px;background:#ffffff;border:1px solid #d1d5db;border-radius:8px;}" +
-		"label{display:flex;flex-direction:column;font-size:12px;gap:6px;}" +
-		"input{padding:8px;border:1px solid #9ca3af;border-radius:6px;min-width:220px;}" +
-		"button{padding:8px 12px;border:1px solid #374151;background:#111827;color:#fff;border-radius:6px;cursor:pointer;}" +
-		"a{color:#1d4ed8;text-decoration:none;}" +
-		"table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #d1d5db;}" +
-		"th,td{padding:8px;vertical-align:top;border-bottom:1px solid #e5e7eb;text-align:left;}" +
-		"th{background:#f3f4f6;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;}" +
-		"code{font-size:12px;white-space:pre-wrap;word-break:break-word;}" +
-		"</style>" +
-		"</head>" +
-		"<body>" +
-		"<h1>MCP Bansho Audit Dashboard</h1>" +
-		"<p>Authenticated as admin key ID: <strong>" + html.EscapeString(authCtx.APIKeyID) + "</strong></p>" +
-		"<form method='get' action='/dashboard'>" +
-		"<label>API Key ID<input type='text' name='api_key_id' value='" + html.EscapeString(apiKeyIDValue) + "'></label>" +
-		"<label>Tool Name<input type='text' name='tool_name' value='" + html.EscapeString(toolNameValue) + "'></label>" +
-		"<label>Limit<input type='number' min='1' max='" + fmt.Sprintf("%d", maxEventLimit) + "' name='limit' value='" + fmt.Sprintf("%d", filters.Limit) + "'></label>" +
-		"<button type='submit'>Apply filters</button>" +
-		"<a href='" + html.EscapeString(apiHref) + "'>JSON API</a>" +
-		"</form>" +
-		"<table><thead><tr>" +
-		"<th>Timestamp</th><th>API Key ID</th><th>Role</th><th>Method</th><th>Tool</th><th>Status</th><th>Latency (ms)</th><th>Decision</th>" +
-		"</tr></thead><tbody>" + rows + "</tbody></table>" +
-		"</body></html>"
+	// ── Build rows (with row-level status class + data attrs for sorting + hidden detail JSON) ──
+	rows := ""
+	for i, e := range events {
+		decisionJSON, _ := json.Marshal(e.Decision)
+		requestJSON, _ := json.Marshal(e.Request)
+		responseJSON, _ := json.Marshal(e.Response)
+
+		// Build detail object for row expansion
+		detail := map[string]any{
+			"decision": e.Decision,
+			"request":  e.Request,
+			"response": e.Response,
+		}
+		detailJSON, _ := json.Marshal(detail)
+
+		stClass := "st-other"
+		rowClass := ""
+		if e.Status >= 200 && e.Status <= 299 {
+			stClass = "st-ok"
+			rowClass = "row-ok"
+		} else if e.Status == 401 || e.Status == 403 {
+			stClass = "st-auth"
+			rowClass = "row-auth"
+		} else if e.Status == 429 {
+			stClass = "st-rate"
+			rowClass = "row-rate"
+		} else if e.Status >= 500 {
+			stClass = "st-err"
+			rowClass = "row-err"
+		}
+
+		_ = requestJSON
+		_ = responseJSON
+
+		rows += fmt.Sprintf(
+			`<tr class="%s" data-idx="%d" data-ts="%s" data-status="%d" data-latency="%d" data-key="%s" data-role="%s" data-method="%s" data-tool="%s">`+
+				`<td class="ts">%s</td>`+
+				`<td class="key">%s</td>`+
+				`<td class="role">%s</td>`+
+				`<td class="method">%s</td>`+
+				`<td class="tool">%s</td>`+
+				`<td><span class="st %s">%d</span></td>`+
+				`<td class="lat">%dms</td>`+
+				`<td class="dec" title="%s">%s</td>`+
+				`<td class="detail-json" style="display:none">%s</td>`+
+				`</tr>`,
+			rowClass, i,
+			html.EscapeString(e.TS), e.Status, e.LatencyMS,
+			html.EscapeString(deref(e.APIKeyID)),
+			html.EscapeString(displayRole(e.Role)),
+			html.EscapeString(e.Method),
+			html.EscapeString(e.ToolName),
+			html.EscapeString(e.TS),
+			html.EscapeString(deref(e.APIKeyID)),
+			html.EscapeString(displayRole(e.Role)),
+			html.EscapeString(e.Method),
+			html.EscapeString(e.ToolName),
+			stClass, e.Status,
+			e.LatencyMS,
+			html.EscapeString(string(decisionJSON)),
+			html.EscapeString(string(decisionJSON)),
+			html.EscapeString(string(detailJSON)))
+	}
+	if rows == "" {
+		rows = `<tr><td colspan="8" class="empty">No audit events match the current filters.</td></tr>`
+	}
+
+	// ── Footer ──
+	footerHTML := fmt.Sprintf(
+		`<div class="ftr">`+
+			`<span>%d events loaded</span>`+
+			`<span>Bansho Security Gateway</span>`+
+			`</div>`,
+		totalEvents)
+
+	// ── Execute template ──
+	tmplData, _ := uiFS.ReadFile("dashboard.html")
+	tmpl, err := template.New("dashboard").Parse(string(tmplData))
+	if err != nil {
+		return fmt.Sprintf("template error: %v", err)
+	}
+
+	var buf bytes.Buffer
+	err = tmpl.Execute(&buf, templateData{
+		HeaderHTML:    template.HTML(headerHTML),
+		FilterBarHTML: template.HTML(filterBarHTML),
+		RowsHTML:      template.HTML(rows),
+		FooterHTML:    template.HTML(footerHTML),
+	})
+	if err != nil {
+		return fmt.Sprintf("render error: %v", err)
+	}
+	return buf.String()
 }
 
 func deref(v *string) string {
@@ -267,4 +398,18 @@ func deref(v *string) string {
 		return ""
 	}
 	return *v
+}
+
+// displayRole formats internal role names for human display.
+func displayRole(role string) string {
+	switch strings.ToLower(strings.TrimSpace(role)) {
+	case "readonly":
+		return "Read-only"
+	default:
+		if role == "" {
+			return ""
+		}
+		// Capitalize first letter
+		return strings.ToUpper(role[:1]) + role[1:]
+	}
 }
