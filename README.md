@@ -412,7 +412,7 @@ Each event's `decision` object records the outcome of every pipeline stage (`aut
 
 ```mermaid
 graph TD
-    Client["MCP Client<br>(Claude Desktop / Cursor / custom)"]
+    Client["MCP Client<br>(Claude Code, OpenCode, Claude Desktop, Pi, Cursor, etc.)"]
     Gateway["Bansho Gateway<br>(bansho serve)"]
     Auth["Auth middleware<br>api_keys table lookup<br>PBKDF2 verify"]
     AuthZ["AuthZ middleware<br>YAML role policy<br>tools/list filter"]
