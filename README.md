@@ -11,6 +11,8 @@ Named after the historical Japanese **Bansho** (番所), the guardhouses and sec
 
 Bansho sits in front of any MCP server and adds API-key authentication, role-based tool authorization, Redis rate limiting, and PostgreSQL audit logging, all without touching a line of upstream code.
 
+**Built for Azure**: Deploy to Azure using Azure Cache for Redis and Azure Database for PostgreSQL. See [`infra/README.md`](infra/README.md) for deployment instructions.
+
 ![screenshot-dashboard](https://github.com/user-attachments/assets/7b0496c4-168d-49c1-ab02-392133d542bc)
 
 ---
@@ -60,6 +62,8 @@ Upstream MCP Server (any MCP server, unchanged)
 
 ## Quickstart
 
+### Local Development
+
 **Prerequisites:** Go 1.21+, Docker
 
 ```bash
@@ -92,6 +96,25 @@ Bansho logs startup metadata to stderr:
 ```
 bansho_proxy_start listen_addr=127.0.0.1:9000 upstream_transport=stdio upstream_target=./bin/vulnerable-server policy_path=config/policies.yaml
 ```
+
+### Azure Deployment
+
+Deploy to Azure using Azure Cache for Redis and Azure Database for PostgreSQL:
+
+```bash
+# Deploy infrastructure
+az group create --name bansho-rg --location eastus
+az deployment group create \
+  --resource-group bansho-rg \
+  --template-file infra/main.bicep \
+  --parameters environmentName=prod
+
+# Build and push container
+docker build -t ghcr.io/microck/bansho:latest .
+docker push ghcr.io/microck/bansho:latest
+```
+
+See [`infra/README.md`](infra/README.md) for complete deployment instructions.
 
 ---
 
