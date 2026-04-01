@@ -224,7 +224,6 @@ func (g *gateway) makeToolHandler(toolName string) mcp.ToolHandler {
 	return func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		started := time.Now()
 		statusCode := int64(500)
-		upstreamCalled := false
 
 		decision := defaultDecisionPayload()
 		var responseJSON any = safeErrorPayload(int(statusCode), internalErrorMessage)
@@ -292,7 +291,6 @@ func (g *gateway) makeToolHandler(toolName string) mcp.ToolHandler {
 		decision["rate"] = rateDecision
 
 		// Forward to upstream
-		upstreamCalled = true
 		args := map[string]any{}
 		if req.Params != nil && len(req.Params.Arguments) > 0 {
 			_ = json.Unmarshal(req.Params.Arguments, &args)
@@ -301,10 +299,7 @@ func (g *gateway) makeToolHandler(toolName string) mcp.ToolHandler {
 		if err != nil {
 			statusCode = 502
 			responseJSON = safeExceptionPayload(int(statusCode), err)
-			if upstreamCalled {
-				return nil, &jsonrpc.Error{Code: statusCode, Message: upstreamFailureMessage}
-			}
-			return nil, &jsonrpc.Error{Code: 500, Message: internalErrorMessage}
+			return nil, &jsonrpc.Error{Code: statusCode, Message: upstreamFailureMessage}
 		}
 
 		statusCode = 200
