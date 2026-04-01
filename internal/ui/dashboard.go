@@ -302,8 +302,6 @@ func renderDashboardHTML(authCtx DashboardAuthContext, filters dashboardFilters,
 	rows := ""
 	for i, e := range events {
 		decisionJSON, _ := json.Marshal(e.Decision)
-		requestJSON, _ := json.Marshal(e.Request)
-		responseJSON, _ := json.Marshal(e.Response)
 
 		// Build detail object for row expansion
 		detail := map[string]any{
@@ -328,9 +326,6 @@ func renderDashboardHTML(authCtx DashboardAuthContext, filters dashboardFilters,
 			stClass = "st-err"
 			rowClass = "row-err"
 		}
-
-		_ = requestJSON
-		_ = responseJSON
 
 		rows += fmt.Sprintf(
 			`<tr class="%s" data-idx="%d" data-ts="%s" data-status="%d" data-latency="%d" data-key="%s" data-role="%s" data-method="%s" data-tool="%s">`+
@@ -402,14 +397,12 @@ func deref(v *string) string {
 
 // displayRole formats internal role names for human display.
 func displayRole(role string) string {
-	switch strings.ToLower(strings.TrimSpace(role)) {
-	case "readonly":
-		return "Read-only"
-	default:
-		if role == "" {
-			return ""
-		}
-		// Capitalize first letter
-		return strings.ToUpper(role[:1]) + role[1:]
+	cleaned := strings.ToLower(strings.TrimSpace(role))
+	if cleaned == "" {
+		return ""
 	}
+	if cleaned == "readonly" {
+		return "Read-only"
+	}
+	return strings.ToUpper(cleaned[:1]) + cleaned[1:]
 }
