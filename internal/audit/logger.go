@@ -10,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// Logger writes and reads audit events from PostgreSQL.
 type Logger struct {
 	Pool *pgxpool.Pool
 }

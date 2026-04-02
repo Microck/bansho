@@ -18,12 +18,14 @@ const (
 	unknownToolSegment   = "__unknown_tool__"
 )
 
+// RateLimitResult holds the outcome of a rate limit check.
 type RateLimitResult struct {
 	Allowed   bool
 	Remaining int
 	ResetS    int
 }
 
+// CheckAPIKeyLimit checks the per-API-key rate limit.
 func CheckAPIKeyLimit(ctx context.Context, client *redis.Client, apiKeyID string, requests int, windowSeconds int, nowS *int64) (RateLimitResult, error) {
 	currentEpoch := currentEpoch(nowS)
 	windowBucket, err := windowBucket(currentEpoch, windowSeconds)
@@ -34,6 +36,7 @@ func CheckAPIKeyLimit(ctx context.Context, client *redis.Client, apiKeyID string
 	return checkFixedWindowLimit(ctx, client, key, requests, windowSeconds, currentEpoch)
 }
 
+// CheckToolLimit checks the per-tool rate limit for an API key.
 func CheckToolLimit(ctx context.Context, client *redis.Client, apiKeyID string, toolName string, requests int, windowSeconds int, nowS *int64) (RateLimitResult, error) {
 	currentEpoch := currentEpoch(nowS)
 	windowBucket, err := windowBucket(currentEpoch, windowSeconds)
@@ -126,10 +129,10 @@ func coerceInt(value any) (int, error) {
 		// go-redis can return a string for integer replies in some cases.
 		parsed, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
-			return 0, fmt.Errorf("unexpected counter value")
+			return 0, fmt.Errorf("unexpected counter value: %w", err)
 		}
 		return int(parsed), nil
 	default:
-		return 0, fmt.Errorf("unexpected counter value")
+		return 0, fmt.Errorf("unexpected counter type %T", value)
 	}
 }

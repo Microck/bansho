@@ -10,11 +10,13 @@ import (
 
 const DefaultAPIKeyRole = "readonly"
 
+// ResolvedKey is the result of a successful API key lookup.
 type ResolvedKey struct {
 	APIKeyID string
 	Role     string
 }
 
+// ListedKey is a summary of an API key for listing endpoints.
 type ListedKey struct {
 	APIKeyID string
 	Role     string
