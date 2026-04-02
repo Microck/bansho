@@ -10,6 +10,7 @@ import (
 
 const DefaultPolicyPath = "config/policies.yaml"
 
+// LoadError wraps a policy file load failure with its path.
 type LoadError struct {
 	Path string
 	Err  error

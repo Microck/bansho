@@ -13,6 +13,7 @@ var (
 	postgresDSN  string
 )
 
+// GetPostgresPool returns a singleton pgxpool.Pool for the given DSN.
 func GetPostgresPool(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
 	postgresMu.Lock()
 	defer postgresMu.Unlock()

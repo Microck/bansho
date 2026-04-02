@@ -17,6 +17,7 @@ const (
 	UpstreamTransportHTTP  UpstreamTransport = "http"
 )
 
+// Settings holds all configuration values for Bansho.
 type Settings struct {
 	BanshoListenHost string
 	BanshoListenPort int
@@ -31,6 +32,7 @@ type Settings struct {
 	RedisURL    string
 }
 
+// Load reads environment variables and returns a Settings struct.
 func Load() (Settings, error) {
 	// Best-effort `.env` support for local dev parity. If missing, continue.
 	_ = godotenv.Overload()
@@ -69,7 +71,7 @@ func Load() (Settings, error) {
 		case UpstreamTransportStdio, UpstreamTransportHTTP:
 			s.UpstreamTransport = transport
 		default:
-			return Settings{}, fmt.Errorf("UPSTREAM_TRANSPORT must be one of: stdio, http")
+			return Settings{}, fmt.Errorf("UPSTREAM_TRANSPORT %q must be one of: stdio, http", t)
 		}
 	}
 	s.UpstreamCmd = strings.TrimSpace(os.Getenv("UPSTREAM_CMD"))

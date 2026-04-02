@@ -13,6 +13,7 @@ var (
 	redisURL    string
 )
 
+// GetRedisClient returns a singleton redis.Client for the given URL.
 func GetRedisClient(url string) (*redis.Client, error) {
 	redisMu.Lock()
 	defer redisMu.Unlock()

@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// Limits for JSON payload sanitization.
 const (
 	MaxJSONBytes       = 4096
 	MaxJSONDepth       = 6
@@ -35,6 +36,7 @@ var sensitiveKeys = map[string]struct{}{
 	"x-api-key_hash": {},
 }
 
+// Event represents a single audit log entry.
 type Event struct {
 	TS         time.Time
 	APIKeyID   *string

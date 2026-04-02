@@ -7,6 +7,7 @@ import (
 
 const ToolWildcard = "*"
 
+// RoleToolPolicy defines which tools a role is allowed to use.
 type RoleToolPolicy struct {
 	Allow []string `yaml:"allow"`
 }
