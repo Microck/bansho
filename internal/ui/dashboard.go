@@ -302,10 +302,7 @@ func renderDashboardHTML(authCtx DashboardAuthContext, filters dashboardFilters,
 	rows := ""
 	for i, e := range events {
 		decisionJSON, _ := json.Marshal(e.Decision)
-		requestJSON, _ := json.Marshal(e.Request)
-		responseJSON, _ := json.Marshal(e.Response)
 
-		// Build detail object for row expansion
 		detail := map[string]any{
 			"decision": e.Decision,
 			"request":  e.Request,
@@ -328,9 +325,6 @@ func renderDashboardHTML(authCtx DashboardAuthContext, filters dashboardFilters,
 			stClass = "st-err"
 			rowClass = "row-err"
 		}
-
-		_ = requestJSON
-		_ = responseJSON
 
 		rows += fmt.Sprintf(
 			`<tr class="%s" data-idx="%d" data-ts="%s" data-status="%d" data-latency="%d" data-key="%s" data-role="%s" data-method="%s" data-tool="%s">`+
