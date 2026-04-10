@@ -214,7 +214,7 @@ func sanitizeMap(m map[string]any, depth int) any {
 }
 
 func sanitizeList(values []any, depth int) any {
-	out := make([]any, 0, minInt(len(values), MaxJSONItems))
+	out := make([]any, 0, min(len(values), MaxJSONItems))
 	for i, item := range values {
 		if i >= MaxJSONItems {
 			out = append(out, TruncatedValue)
@@ -223,13 +223,6 @@ func sanitizeList(values []any, depth int) any {
 		out = append(out, sanitizeJSONValue(item, depth+1))
 	}
 	return out
-}
-
-func minInt(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }
 
 func truncateText(text string, maxChars int) string {
