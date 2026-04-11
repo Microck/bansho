@@ -85,6 +85,10 @@ func (p *RolesPolicy) Normalize() error {
 	return nil
 }
 
+// ForRole returns the tool policy for the given role name.
+// Returns nil for unrecognized roles — callers should treat this as
+// deny-by-default and log a warning, since a typo in role config could
+// silently lock out legitimate users.
 func (p *RolesPolicy) ForRole(role string) *RoleToolPolicy {
 	switch strings.ToLower(strings.TrimSpace(role)) {
 	case "admin":
@@ -189,7 +193,12 @@ func (p *RateLimitsPolicy) Normalize() error {
 	return nil
 }
 
+// CurrentPolicyVersion is the latest supported policy file format version.
+// Policy files without a version field default to "1" for backward compatibility.
+const CurrentPolicyVersion = "1"
+
 type Policy struct {
+	Version    string           `yaml:"version,omitempty"`
 	Roles      RolesPolicy      `yaml:"roles"`
 	RateLimits RateLimitsPolicy `yaml:"rate_limits"`
 }
@@ -201,6 +210,15 @@ func (p *Policy) Defaults() {
 
 func (p *Policy) Normalize() error {
 	p.Defaults()
+
+	// Default to version "1" for existing policy files without the field.
+	if strings.TrimSpace(p.Version) == "" {
+		p.Version = "1"
+	}
+	if p.Version != CurrentPolicyVersion {
+		return fmt.Errorf("unsupported policy version %q (current: %q)", p.Version, CurrentPolicyVersion)
+	}
+
 	if err := p.Roles.Normalize(); err != nil {
 		return err
 	}
