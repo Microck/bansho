@@ -13,6 +13,11 @@ import (
 
 const FixedWindowIncrScript = "local current = redis.call(\"INCR\", KEYS[1])\nif current == 1 then\n  redis.call(\"EXPIRE\", KEYS[1], ARGV[1])\nend\nreturn current"
 
+// rateLimitKeyVersion prefixes all Redis rate-limit keys.
+// Bumping this version isolates new key formats from existing counters,
+// preventing false rate-limit triggers after a format change.
+const rateLimitKeyVersion = "v1"
+
 const (
 	unknownAPIKeySegment = "__unknown_key__"
 	unknownToolSegment   = "__unknown_tool__"
@@ -46,13 +51,13 @@ func CheckToolLimit(ctx context.Context, client *redis.Client, apiKeyID string, 
 
 func apiKeyRateLimitKey(apiKeyID string, windowBucket int64) string {
 	n := normalizeSegment(apiKeyID, unknownAPIKeySegment)
-	return fmt.Sprintf("rl:%s:%d", n, windowBucket)
+	return fmt.Sprintf("rl:%s:%s:%d", rateLimitKeyVersion, n, windowBucket)
 }
 
 func toolRateLimitKey(apiKeyID string, toolName string, windowBucket int64) string {
 	nKey := normalizeSegment(apiKeyID, unknownAPIKeySegment)
 	nTool := normalizeSegment(toolName, unknownToolSegment)
-	return fmt.Sprintf("rl:%s:%s:%d", nKey, nTool, windowBucket)
+	return fmt.Sprintf("rl:%s:%s:%s:%d", rateLimitKeyVersion, nKey, nTool, windowBucket)
 }
 
 func checkFixedWindowLimit(ctx context.Context, client *redis.Client, key string, requests int, windowSeconds int, currentEpoch int64) (RateLimitResult, error) {
