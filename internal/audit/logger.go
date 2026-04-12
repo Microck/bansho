@@ -1,3 +1,4 @@
+// Package audit provides structured audit event logging and querying backed by PostgreSQL.
 package audit
 
 import (
@@ -10,10 +11,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// Logger writes and queries audit events in PostgreSQL.
 type Logger struct {
 	Pool *pgxpool.Pool
 }
 
+// LogEvent validates, sanitizes, and inserts an audit event into the database.
 func (l *Logger) LogEvent(ctx context.Context, event Event) error {
 	if l == nil || l.Pool == nil {
 		return fmt.Errorf("audit logger is not configured")
@@ -48,6 +51,7 @@ func (l *Logger) LogEvent(ctx context.Context, event Event) error {
 	return err
 }
 
+// RecentEvent represents an audit event returned by dashboard queries.
 type RecentEvent struct {
 	TS        string         `json:"ts"`
 	APIKeyID  *string        `json:"api_key_id"`
@@ -61,12 +65,14 @@ type RecentEvent struct {
 	Response  map[string]any `json:"response_json"`
 }
 
+// RecentQuery specifies filter parameters for fetching recent audit events.
 type RecentQuery struct {
 	Limit    int
 	APIKeyID *string
 	ToolName *string
 }
 
+// FetchRecentEvents queries recent audit events matching the given filters.
 func (l *Logger) FetchRecentEvents(ctx context.Context, q RecentQuery) ([]RecentEvent, error) {
 	if l == nil || l.Pool == nil {
 		return nil, fmt.Errorf("audit logger is not configured")

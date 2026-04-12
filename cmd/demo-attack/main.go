@@ -1,3 +1,4 @@
+// Package main implements a demo client that calls the vulnerable (unprotected) MCP server directly.
 package main
 
 import (

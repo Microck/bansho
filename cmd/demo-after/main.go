@@ -1,3 +1,4 @@
+// Package main implements a demo client that verifies Bansho security protections (401, 403, 429, 200).
 package main
 
 import (

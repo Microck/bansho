@@ -1,3 +1,4 @@
+// Package storage provides singleton PostgreSQL pool and Redis client management, plus schema migrations.
 package storage
 
 import (
@@ -13,6 +14,7 @@ var (
 	postgresDSN  string
 )
 
+// GetPostgresPool returns a singleton PostgreSQL connection pool, creating one if needed.
 func GetPostgresPool(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
 	postgresMu.Lock()
 	defer postgresMu.Unlock()
@@ -35,6 +37,7 @@ func GetPostgresPool(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
 	return postgresPool, nil
 }
 
+// ClosePostgresPool closes and resets the global PostgreSQL connection pool.
 func ClosePostgresPool() {
 	postgresMu.Lock()
 	defer postgresMu.Unlock()

@@ -12,8 +12,11 @@ import (
 )
 
 const (
+	// PBKDF2Scheme identifies the hashing scheme used for API key storage.
 	PBKDF2Scheme     = "pbkdf2_sha256"
+	// PBKDF2Iterations is the default number of PBKDF2 iterations.
 	PBKDF2Iterations = 210_000
+	// APIKeyPrefix is the prefix prepended to all generated API keys.
 	APIKeyPrefix     = "msl_"
 
 	saltBytes   = 16
@@ -21,6 +24,7 @@ const (
 	digestBytes = 32
 )
 
+// GenerateAPIKey creates a cryptographically random API key string with the given prefix.
 func GenerateAPIKey(prefix string) (string, error) {
 	if strings.TrimSpace(prefix) == "" {
 		prefix = APIKeyPrefix
@@ -32,6 +36,7 @@ func GenerateAPIKey(prefix string) (string, error) {
 	return prefix + base64.RawURLEncoding.EncodeToString(buf), nil
 }
 
+// HashAPIKey returns a PBKDF2-SHA256 hash string of the API key suitable for storage.
 func HashAPIKey(apiKey string, iterations int) (string, error) {
 	if iterations <= 0 {
 		iterations = PBKDF2Iterations
@@ -44,6 +49,7 @@ func HashAPIKey(apiKey string, iterations int) (string, error) {
 	return PBKDF2Scheme + "$" + strconv.Itoa(iterations) + "$" + toB64(salt) + "$" + toB64(digest), nil
 }
 
+// VerifyAPIKey checks whether the presented API key matches the stored PBKDF2 hash.
 func VerifyAPIKey(apiKey string, storedHash string) bool {
 	parts := strings.SplitN(storedHash, "$", 4)
 	if len(parts) != 4 {

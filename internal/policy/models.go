@@ -5,12 +5,15 @@ import (
 	"strings"
 )
 
+// ToolWildcard is the wildcard pattern that allows access to all tools.
 const ToolWildcard = "*"
 
+// RoleToolPolicy defines which tools a role is allowed to invoke.
 type RoleToolPolicy struct {
 	Allow []string `yaml:"allow"`
 }
 
+// Allows reports whether the given tool name is permitted by this role policy.
 func (p RoleToolPolicy) Allows(toolName string) bool {
 	n := strings.TrimSpace(toolName)
 	if n == "" {
@@ -27,6 +30,7 @@ func (p RoleToolPolicy) Allows(toolName string) bool {
 	return false
 }
 
+// Normalize deduplicates and validates the tool allow list.
 func (p *RoleToolPolicy) Normalize() error {
 	var out []string
 	for _, raw := range p.Allow {
@@ -53,12 +57,14 @@ func (p *RoleToolPolicy) Normalize() error {
 	return nil
 }
 
+// RolesPolicy holds tool-access policies for the admin, user, and readonly roles.
 type RolesPolicy struct {
 	Admin    RoleToolPolicy `yaml:"admin"`
 	User     RoleToolPolicy `yaml:"user"`
 	Readonly RoleToolPolicy `yaml:"readonly"`
 }
 
+// Defaults populates nil allow lists with their zero-value defaults.
 func (p *RolesPolicy) Defaults() {
 	if p.Admin.Allow == nil {
 		p.Admin.Allow = []string{ToolWildcard}
@@ -71,6 +77,7 @@ func (p *RolesPolicy) Defaults() {
 	}
 }
 
+// Normalize validates and normalizes all role tool policies.
 func (p *RolesPolicy) Normalize() error {
 	p.Defaults()
 	if err := p.Admin.Normalize(); err != nil {
@@ -85,6 +92,7 @@ func (p *RolesPolicy) Normalize() error {
 	return nil
 }
 
+// ForRole returns the RoleToolPolicy for the named role, or nil if unknown.
 func (p *RolesPolicy) ForRole(role string) *RoleToolPolicy {
 	switch strings.ToLower(strings.TrimSpace(role)) {
 	case "admin":
@@ -98,11 +106,13 @@ func (p *RolesPolicy) ForRole(role string) *RoleToolPolicy {
 	}
 }
 
+// RateLimitWindow defines a fixed-window rate limit with request count and duration.
 type RateLimitWindow struct {
 	Requests      int `yaml:"requests"`
 	WindowSeconds int `yaml:"window_seconds"`
 }
 
+// Defaults sets zero-valued fields to the provided fallbacks.
 func (w *RateLimitWindow) Defaults(requests int, windowSeconds int) {
 	if w.Requests == 0 {
 		w.Requests = requests
@@ -112,6 +122,7 @@ func (w *RateLimitWindow) Defaults(requests int, windowSeconds int) {
 	}
 }
 
+// Validate ensures the rate limit window values are positive.
 func (w *RateLimitWindow) Validate() error {
 	if w.Requests <= 0 {
 		return fmt.Errorf("requests must be > 0")
@@ -122,11 +133,13 @@ func (w *RateLimitWindow) Validate() error {
 	return nil
 }
 
+// ToolRateLimitPolicy configures per-tool rate limits with a default and optional overrides.
 type ToolRateLimitPolicy struct {
 	Default   RateLimitWindow            `yaml:"default"`
 	Overrides map[string]RateLimitWindow `yaml:"overrides"`
 }
 
+// Defaults populates zero-valued fields with sensible defaults for tool rate limits.
 func (p *ToolRateLimitPolicy) Defaults() {
 	p.Default.Defaults(30, 60)
 	if p.Overrides == nil {
@@ -134,6 +147,7 @@ func (p *ToolRateLimitPolicy) Defaults() {
 	}
 }
 
+// Normalize validates and normalizes default and override tool rate limits.
 func (p *ToolRateLimitPolicy) Normalize() error {
 	p.Defaults()
 	if err := p.Default.Validate(); err != nil {
@@ -157,6 +171,7 @@ func (p *ToolRateLimitPolicy) Normalize() error {
 	return nil
 }
 
+// ForTool returns the rate limit window for the given tool, falling back to the default.
 func (p *ToolRateLimitPolicy) ForTool(toolName string) RateLimitWindow {
 	n := strings.TrimSpace(toolName)
 	if n == "" {
@@ -168,16 +183,19 @@ func (p *ToolRateLimitPolicy) ForTool(toolName string) RateLimitWindow {
 	return p.Default
 }
 
+// RateLimitsPolicy groups per-API-key and per-tool rate limit configuration.
 type RateLimitsPolicy struct {
 	PerAPIKey RateLimitWindow     `yaml:"per_api_key"`
 	PerTool   ToolRateLimitPolicy `yaml:"per_tool"`
 }
 
+// Defaults sets zero-valued rate limit fields to their default values.
 func (p *RateLimitsPolicy) Defaults() {
 	p.PerAPIKey.Defaults(120, 60)
 	p.PerTool.Defaults()
 }
 
+// Normalize validates all rate limit settings.
 func (p *RateLimitsPolicy) Normalize() error {
 	p.Defaults()
 	if err := p.PerAPIKey.Validate(); err != nil {
@@ -189,16 +207,19 @@ func (p *RateLimitsPolicy) Normalize() error {
 	return nil
 }
 
+// Policy is the top-level configuration for role-based access control and rate limiting.
 type Policy struct {
 	Roles      RolesPolicy      `yaml:"roles"`
 	RateLimits RateLimitsPolicy `yaml:"rate_limits"`
 }
 
+// Defaults initializes nil sub-policies with their default values.
 func (p *Policy) Defaults() {
 	p.Roles.Defaults()
 	p.RateLimits.Defaults()
 }
 
+// Normalize validates the entire policy and enforces constraints such as wildcard-only-for-admin.
 func (p *Policy) Normalize() error {
 	p.Defaults()
 	if err := p.Roles.Normalize(); err != nil {
@@ -214,6 +235,7 @@ func (p *Policy) Normalize() error {
 	return nil
 }
 
+// IsToolAllowed checks whether the given role is permitted to use the named tool.
 func (p Policy) IsToolAllowed(role string, toolName string) bool {
 	rolePolicy := p.Roles.ForRole(role)
 	if rolePolicy == nil {

@@ -1,3 +1,4 @@
+// Package main is the Bansho CLI entry point providing serve, dashboard, and key management commands.
 package main
 
 import (
@@ -13,6 +14,7 @@ import (
 	"github.com/microck/bansho/internal/ui"
 )
 
+// Version holds the bansho binary version, set at build time.
 var Version = "dev"
 
 func main() {

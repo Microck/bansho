@@ -1,3 +1,6 @@
+// Package proxy implements the MCP gateway that authenticates requests, enforces
+// policy-based authorization and rate limits, then forwards allowed calls to an
+// upstream MCP server while recording audit events.
 package proxy
 
 import (
@@ -11,16 +14,19 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+// Upstream manages a connection to the backend MCP server.
 type Upstream struct {
 	settings config.Settings
 	client   *mcp.Client
 	session  *mcp.ClientSession
 }
 
+// NewUpstream creates a new Upstream using the provided settings.
 func NewUpstream(settings config.Settings) *Upstream {
 	return &Upstream{settings: settings}
 }
 
+// Connect establishes a client session to the upstream MCP server, reusing an existing session if available.
 func (u *Upstream) Connect(ctx context.Context) (*mcp.ClientSession, error) {
 	if u.session != nil {
 		return u.session, nil
@@ -41,6 +47,7 @@ func (u *Upstream) Connect(ctx context.Context) (*mcp.ClientSession, error) {
 	return u.session, nil
 }
 
+// Close shuts down the upstream client session.
 func (u *Upstream) Close() {
 	if u.session != nil {
 		_ = u.session.Close()
@@ -48,6 +55,7 @@ func (u *Upstream) Close() {
 	u.session = nil
 }
 
+// InitializeResult returns the MCP initialize result from the upstream server.
 func (u *Upstream) InitializeResult(ctx context.Context) (*mcp.InitializeResult, error) {
 	session, err := u.Connect(ctx)
 	if err != nil {
