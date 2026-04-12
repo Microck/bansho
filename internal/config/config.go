@@ -1,3 +1,4 @@
+// Package config loads and validates application settings from environment variables.
 package config
 
 import (
@@ -10,13 +11,17 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// UpstreamTransport represents the transport protocol used to connect to the upstream MCP server.
 type UpstreamTransport string
 
 const (
+	// UpstreamTransportStdio uses stdin/stdout to communicate with the upstream server.
 	UpstreamTransportStdio UpstreamTransport = "stdio"
+	// UpstreamTransportHTTP uses HTTP/SSE to communicate with the upstream server.
 	UpstreamTransportHTTP  UpstreamTransport = "http"
 )
 
+// Settings holds all configuration values for the bansho gateway.
 type Settings struct {
 	BanshoListenHost string
 	BanshoListenPort int
@@ -31,6 +36,7 @@ type Settings struct {
 	RedisURL    string
 }
 
+// Load reads configuration from environment variables (and optional .env file) and returns populated Settings.
 func Load() (Settings, error) {
 	// Best-effort `.env` support for local dev parity. If missing, continue.
 	_ = godotenv.Overload()

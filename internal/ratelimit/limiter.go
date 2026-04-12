@@ -1,3 +1,4 @@
+// Package ratelimit provides fixed-window rate limiting backed by Redis for API keys and tools.
 package ratelimit
 
 import (
@@ -11,6 +12,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// FixedWindowIncrScript is a Redis Lua script that increments a counter and sets expiry on first use.
 const FixedWindowIncrScript = "local current = redis.call(\"INCR\", KEYS[1])\nif current == 1 then\n  redis.call(\"EXPIRE\", KEYS[1], ARGV[1])\nend\nreturn current"
 
 const (
@@ -18,12 +20,14 @@ const (
 	unknownToolSegment   = "__unknown_tool__"
 )
 
+// RateLimitResult holds the outcome of a rate-limit check.
 type RateLimitResult struct {
 	Allowed   bool
 	Remaining int
 	ResetS    int
 }
 
+// CheckAPIKeyLimit checks the per-API-key rate limit using a fixed-window algorithm.
 func CheckAPIKeyLimit(ctx context.Context, client *redis.Client, apiKeyID string, requests int, windowSeconds int, nowS *int64) (RateLimitResult, error) {
 	currentEpoch := currentEpoch(nowS)
 	windowBucket, err := windowBucket(currentEpoch, windowSeconds)
@@ -34,6 +38,7 @@ func CheckAPIKeyLimit(ctx context.Context, client *redis.Client, apiKeyID string
 	return checkFixedWindowLimit(ctx, client, key, requests, windowSeconds, currentEpoch)
 }
 
+// CheckToolLimit checks the per-tool rate limit for a given API key using a fixed-window algorithm.
 func CheckToolLimit(ctx context.Context, client *redis.Client, apiKeyID string, toolName string, requests int, windowSeconds int, nowS *int64) (RateLimitResult, error) {
 	currentEpoch := currentEpoch(nowS)
 	windowBucket, err := windowBucket(currentEpoch, windowSeconds)

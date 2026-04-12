@@ -1,3 +1,6 @@
+// Package proxy implements the MCP gateway that authenticates requests, enforces
+// policy-based authorization and rate limits, then forwards allowed calls to an
+// upstream MCP server while recording audit events.
 package proxy
 
 import (
@@ -32,11 +35,13 @@ const (
 	unknownToolName        = "__unknown_tool__"
 )
 
+// AuthContext holds the identity resolved from a presented API key.
 type AuthContext struct {
 	APIKeyID string
 	Role     string
 }
 
+// RunStdioGateway starts the MCP gateway on stdio, connecting to the configured upstream and serving proxied tool calls.
 func RunStdioGateway(settings config.Settings) error {
 	ctx := context.Background()
 

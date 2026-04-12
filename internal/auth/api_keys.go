@@ -1,3 +1,4 @@
+// Package auth provides API key creation, verification, and management backed by PostgreSQL.
 package auth
 
 import (
@@ -8,19 +9,23 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// DefaultAPIKeyRole is the role assigned to newly created API keys when no role is specified.
 const DefaultAPIKeyRole = "readonly"
 
+// ResolvedKey holds the identity and role resolved from a verified API key.
 type ResolvedKey struct {
 	APIKeyID string
 	Role     string
 }
 
+// ListedKey represents an API key entry returned by ListAPIKeys.
 type ListedKey struct {
 	APIKeyID string
 	Role     string
 	Revoked  bool
 }
 
+// CreateAPIKey generates a new API key, hashes it, and stores it in the database.
 func CreateAPIKey(ctx context.Context, pool *pgxpool.Pool, role string) (apiKeyID string, apiKey string, err error) {
 	normalizedRole := normalizeRole(role)
 	apiKey, err = GenerateAPIKey(APIKeyPrefix)
@@ -39,6 +44,7 @@ func CreateAPIKey(ctx context.Context, pool *pgxpool.Pool, role string) (apiKeyI
 	return id.String(), apiKey, nil
 }
 
+// ResolveAPIKey looks up the presented key against all non-revoked keys and returns the matching identity.
 func ResolveAPIKey(ctx context.Context, pool *pgxpool.Pool, presentedKey string) (*ResolvedKey, error) {
 	if strings.TrimSpace(presentedKey) == "" {
 		return nil, nil
@@ -69,6 +75,7 @@ func ResolveAPIKey(ctx context.Context, pool *pgxpool.Pool, presentedKey string)
 	return resolved, nil
 }
 
+// ListAPIKeys returns all API keys ordered by creation time descending.
 func ListAPIKeys(ctx context.Context, pool *pgxpool.Pool) ([]ListedKey, error) {
 	rows, err := pool.Query(ctx, `
 		SELECT id, role, (revoked_at IS NOT NULL) AS revoked
@@ -98,6 +105,7 @@ func ListAPIKeys(ctx context.Context, pool *pgxpool.Pool) ([]ListedKey, error) {
 	return out, nil
 }
 
+// RevokeAPIKey marks the specified API key as revoked; returns true if a key was revoked.
 func RevokeAPIKey(ctx context.Context, pool *pgxpool.Pool, apiKeyID string) (bool, error) {
 	parsed, err := uuid.Parse(strings.TrimSpace(apiKeyID))
 	if err != nil {

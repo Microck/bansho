@@ -1,3 +1,4 @@
+// Package main implements a deliberately unprotected MCP server used for attack demonstrations.
 package main
 
 import (

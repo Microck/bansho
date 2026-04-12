@@ -41,6 +41,7 @@ var schemaStatements = []string{
 	`,
 }
 
+// EnsureSchema executes all schema migration statements against the database.
 func EnsureSchema(ctx context.Context, pool *pgxpool.Pool) error {
 	for _, stmt := range schemaStatements {
 		if _, err := pool.Exec(ctx, stmt); err != nil {

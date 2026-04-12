@@ -9,13 +9,20 @@ import (
 )
 
 const (
+	// MaxJSONBytes is the maximum allowed size for a serialized JSON payload.
 	MaxJSONBytes       = 4096
+	// MaxJSONDepth is the maximum nesting depth allowed in JSON payloads.
 	MaxJSONDepth       = 6
+	// MaxJSONItems is the maximum number of map keys or list elements retained.
 	MaxJSONItems       = 40
+	// MaxJSONKeyChars is the maximum length of a JSON object key before truncation.
 	MaxJSONKeyChars    = 64
+	// MaxJSONStringChars is the maximum length of a JSON string value before truncation.
 	MaxJSONStringChars = 512
 
+	// RedactedValue is the placeholder substituted for sensitive fields.
 	RedactedValue  = "[REDACTED]"
+	// TruncatedValue is the placeholder for values that exceed size limits.
 	TruncatedValue = "[TRUNCATED]"
 )
 
@@ -35,6 +42,7 @@ var sensitiveKeys = map[string]struct{}{
 	"x-api-key_hash": {},
 }
 
+// Event represents a single audit event before sanitization and storage.
 type Event struct {
 	TS         time.Time
 	APIKeyID   *string
@@ -48,6 +56,7 @@ type Event struct {
 	LatencyMS  int
 }
 
+// InsertValues holds the sanitized, bounded values ready for database insertion.
 type InsertValues struct {
 	TS           time.Time
 	APIKeyID     *string
@@ -61,6 +70,7 @@ type InsertValues struct {
 	LatencyMS    int
 }
 
+// NormalizeAndBound validates the event fields, sanitizes JSON payloads, and returns bounded insert values.
 func (e Event) NormalizeAndBound() (InsertValues, error) {
 	role := normalizeTextOr(e.Role, "unknown")
 	method := strings.ToUpper(strings.TrimSpace(e.Method))

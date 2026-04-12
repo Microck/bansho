@@ -1,3 +1,4 @@
+// Package ui serves the Bansho web dashboard for browsing audit events and managing API keys.
 package ui
 
 import (
@@ -20,6 +21,7 @@ import (
 	"github.com/microck/bansho/internal/storage"
 )
 
+// uiFS embeds the dashboard HTML and SVG assets.
 //go:embed dashboard.html banshologo.svg banshohorizontal.svg
 var uiFS embed.FS
 
@@ -28,11 +30,13 @@ const (
 	maxEventLimit     = 200
 )
 
+// DashboardAuthContext holds the authenticated identity for a dashboard session.
 type DashboardAuthContext struct {
 	APIKeyID string
 	Role     string
 }
 
+// RunDashboard starts the HTTP dashboard server.
 func RunDashboard(settings config.Settings) error {
 	ctx := context.Background()
 	pool, err := storage.GetPostgresPool(ctx, settings.PostgresDSN)

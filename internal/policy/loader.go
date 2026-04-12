@@ -1,3 +1,4 @@
+// Package policy loads and evaluates YAML-based access control policies for roles and rate limits.
 package policy
 
 import (
@@ -8,8 +9,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// DefaultPolicyPath is the default file path for the policies YAML configuration.
 const DefaultPolicyPath = "config/policies.yaml"
 
+// LoadError describes a failure to load or parse a policy file.
 type LoadError struct {
 	Path string
 	Err  error
@@ -26,6 +29,7 @@ func (e *LoadError) Unwrap() error {
 	return e.Err
 }
 
+// LoadPolicy reads and normalizes a policy YAML file from the given path.
 func LoadPolicy(path string) (Policy, error) {
 	resolved := path
 	if resolved == "" {
