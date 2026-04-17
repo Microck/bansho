@@ -1,8 +1,10 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/logo-horizontal.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/logo-horizontal-dark.svg">
   <img alt="Bansho" src="docs/brand/logo-horizontal.svg" width="640">
 </picture>
 
+[![CI](https://github.com/Microck/bansho/actions/workflows/ci.yml/badge.svg)](https://github.com/Microck/bansho/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/microck/bansho.svg)](https://pkg.go.dev/github.com/microck/bansho)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 **Drop Bansho in front of any MCP server to get API-key auth, role-scoped tool access, rate limiting, and a full audit log with zero upstream changes.**
@@ -14,6 +16,27 @@ Bansho sits in front of any MCP server and adds API-key authentication, role-bas
 **Built for Azure**: Deploy to Azure using Azure Cache for Redis and Azure Database for PostgreSQL. See [`infra/README.md`](infra/README.md) for deployment instructions.
 
 ![screenshot-dashboard](https://github.com/user-attachments/assets/7b0496c4-168d-49c1-ab02-392133d542bc)
+
+---
+
+## Table of Contents
+
+- [How It Works](#how-it-works)
+- [Features](#features)
+- [Quickstart](#quickstart)
+- [Installation](#installation)
+- [Usage](#usage)
+- [CLI Reference](#cli-reference)
+- [Configuration](#configuration)
+- [Demo: Before / After](#demo-before--after)
+- [Dashboard / Audit API](#dashboard--audit-api)
+- [Architecture](#architecture)
+- [Development](#development)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [Security](#security)
+- [License](#license)
+- [Origin](#origin)
 
 ---
 
