@@ -129,7 +129,7 @@ func normalizeTextOr(value string, fallback string) string {
 func boundJSONPayload(value any) any {
 	sanitized := sanitizeJSONValue(value, 0)
 	encoded := serializeJSON(sanitized)
-	if len([]byte(encoded)) <= MaxJSONBytes {
+	if len(encoded) <= MaxJSONBytes {
 		return sanitized
 	}
 	previewChars := MaxJSONBytes / 2
@@ -141,7 +141,7 @@ func boundJSONPayload(value any) any {
 	}
 	return map[string]any{
 		"truncated":      true,
-		"original_bytes": len([]byte(encoded)),
+		"original_bytes": len(encoded),
 		"preview":        truncateText(encoded, previewChars),
 	}
 }
@@ -214,7 +214,7 @@ func sanitizeMap(m map[string]any, depth int) any {
 }
 
 func sanitizeList(values []any, depth int) any {
-	out := make([]any, 0, minInt(len(values), MaxJSONItems))
+	out := make([]any, 0, min(len(values), MaxJSONItems))
 	for i, item := range values {
 		if i >= MaxJSONItems {
 			out = append(out, TruncatedValue)
@@ -225,12 +225,7 @@ func sanitizeList(values []any, depth int) any {
 	return out
 }
 
-func minInt(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
+
 
 func truncateText(text string, maxChars int) string {
 	if maxChars <= 0 {

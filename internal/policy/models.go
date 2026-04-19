@@ -28,6 +28,7 @@ func (p RoleToolPolicy) Allows(toolName string) bool {
 }
 
 func (p *RoleToolPolicy) Normalize() error {
+	seen := make(map[string]struct{}, len(p.Allow))
 	var out []string
 	for _, raw := range p.Allow {
 		name := strings.TrimSpace(raw)
@@ -38,14 +39,8 @@ func (p *RoleToolPolicy) Normalize() error {
 			p.Allow = []string{ToolWildcard}
 			return nil
 		}
-		seen := false
-		for _, existing := range out {
-			if existing == name {
-				seen = true
-				break
-			}
-		}
-		if !seen {
+		if _, exists := seen[name]; !exists {
+			seen[name] = struct{}{}
 			out = append(out, name)
 		}
 	}
