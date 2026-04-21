@@ -10,10 +10,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// Logger represents the logger configuration or data.
 type Logger struct {
 	Pool *pgxpool.Pool
 }
 
+// LogEvent implements the log event logic.
 func (l *Logger) LogEvent(ctx context.Context, event Event) error {
 	if l == nil || l.Pool == nil {
 		return fmt.Errorf("audit logger is not configured")
@@ -48,6 +50,7 @@ func (l *Logger) LogEvent(ctx context.Context, event Event) error {
 	return err
 }
 
+// RecentEvent represents the recentevent configuration or data.
 type RecentEvent struct {
 	TS        string         `json:"ts"`
 	APIKeyID  *string        `json:"api_key_id"`
@@ -61,12 +64,14 @@ type RecentEvent struct {
 	Response  map[string]any `json:"response_json"`
 }
 
+// RecentQuery represents the recentquery configuration or data.
 type RecentQuery struct {
 	Limit    int
 	APIKeyID *string
 	ToolName *string
 }
 
+// FetchRecentEvents fetches the RecentEvents.
 func (l *Logger) FetchRecentEvents(ctx context.Context, q RecentQuery) ([]RecentEvent, error) {
 	if l == nil || l.Pool == nil {
 		return nil, fmt.Errorf("audit logger is not configured")

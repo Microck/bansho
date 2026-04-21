@@ -7,8 +7,10 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+// ListCustomersArgs represents the listcustomersargs configuration or data.
 type ListCustomersArgs struct{}
 
+// DeleteCustomerArgs represents the deletecustomerargs configuration or data.
 type DeleteCustomerArgs struct {
 	CustomerID string `json:"customer_id" jsonschema:"ID of the customer to delete"`
 }

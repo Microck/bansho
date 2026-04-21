@@ -28,11 +28,13 @@ const (
 	maxEventLimit     = 200
 )
 
+// DashboardAuthContext represents the dashboardauthcontext configuration or data.
 type DashboardAuthContext struct {
 	APIKeyID string
 	Role     string
 }
 
+// RunDashboard runs the gateway.
 func RunDashboard(settings config.Settings) error {
 	ctx := context.Background()
 	pool, err := storage.GetPostgresPool(ctx, settings.PostgresDSN)

@@ -18,12 +18,14 @@ const (
 	unknownToolSegment   = "__unknown_tool__"
 )
 
+// RateLimitResult represents the ratelimitresult configuration or data.
 type RateLimitResult struct {
 	Allowed   bool
 	Remaining int
 	ResetS    int
 }
 
+// CheckAPIKeyLimit checks the APIKeyLimit.
 func CheckAPIKeyLimit(ctx context.Context, client *redis.Client, apiKeyID string, requests int, windowSeconds int, nowS *int64) (RateLimitResult, error) {
 	currentEpoch := currentEpoch(nowS)
 	windowBucket, err := windowBucket(currentEpoch, windowSeconds)
@@ -34,6 +36,7 @@ func CheckAPIKeyLimit(ctx context.Context, client *redis.Client, apiKeyID string
 	return checkFixedWindowLimit(ctx, client, key, requests, windowSeconds, currentEpoch)
 }
 
+// CheckToolLimit checks the ToolLimit.
 func CheckToolLimit(ctx context.Context, client *redis.Client, apiKeyID string, toolName string, requests int, windowSeconds int, nowS *int64) (RateLimitResult, error) {
 	currentEpoch := currentEpoch(nowS)
 	windowBucket, err := windowBucket(currentEpoch, windowSeconds)

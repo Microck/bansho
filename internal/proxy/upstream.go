@@ -11,16 +11,19 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+// Upstream represents the upstream configuration or data.
 type Upstream struct {
 	settings config.Settings
 	client   *mcp.Client
 	session  *mcp.ClientSession
 }
 
+// NewUpstream creates a new Upstream.
 func NewUpstream(settings config.Settings) *Upstream {
 	return &Upstream{settings: settings}
 }
 
+// Connect establishes a connection to the upstream server.
 func (u *Upstream) Connect(ctx context.Context) (*mcp.ClientSession, error) {
 	if u.session != nil {
 		return u.session, nil
@@ -41,6 +44,7 @@ func (u *Upstream) Connect(ctx context.Context) (*mcp.ClientSession, error) {
 	return u.session, nil
 }
 
+// Close closes the connection and releases resources.
 func (u *Upstream) Close() {
 	if u.session != nil {
 		_ = u.session.Close()
@@ -48,6 +52,7 @@ func (u *Upstream) Close() {
 	u.session = nil
 }
 
+// InitializeResult initializes the session and returns capabilities.
 func (u *Upstream) InitializeResult(ctx context.Context) (*mcp.InitializeResult, error) {
 	session, err := u.Connect(ctx)
 	if err != nil {

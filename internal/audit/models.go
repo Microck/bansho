@@ -35,6 +35,7 @@ var sensitiveKeys = map[string]struct{}{
 	"x-api-key_hash": {},
 }
 
+// Event represents the event configuration or data.
 type Event struct {
 	TS         time.Time
 	APIKeyID   *string
@@ -48,6 +49,7 @@ type Event struct {
 	LatencyMS  int
 }
 
+// InsertValues represents the insertvalues configuration or data.
 type InsertValues struct {
 	TS           time.Time
 	APIKeyID     *string
@@ -61,6 +63,7 @@ type InsertValues struct {
 	LatencyMS    int
 }
 
+// NormalizeAndBound implements the normalize and bound logic.
 func (e Event) NormalizeAndBound() (InsertValues, error) {
 	role := normalizeTextOr(e.Role, "unknown")
 	method := strings.ToUpper(strings.TrimSpace(e.Method))

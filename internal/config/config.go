@@ -17,6 +17,7 @@ const (
 	UpstreamTransportHTTP  UpstreamTransport = "http"
 )
 
+// Settings represents the settings configuration or data.
 type Settings struct {
 	BanshoListenHost string
 	BanshoListenPort int
@@ -31,6 +32,7 @@ type Settings struct {
 	RedisURL    string
 }
 
+// Load loads the resource.
 func Load() (Settings, error) {
 	// Best-effort `.env` support for local dev parity. If missing, continue.
 	_ = godotenv.Overload()

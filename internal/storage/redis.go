@@ -13,6 +13,7 @@ var (
 	redisURL    string
 )
 
+// GetRedisClient returns the RedisClient.
 func GetRedisClient(url string) (*redis.Client, error) {
 	redisMu.Lock()
 	defer redisMu.Unlock()
@@ -35,6 +36,7 @@ func GetRedisClient(url string) (*redis.Client, error) {
 	return redisClient, nil
 }
 
+// CloseRedisClient closes the connection and releases resources.
 func CloseRedisClient() {
 	redisMu.Lock()
 	defer redisMu.Unlock()
@@ -45,10 +47,12 @@ func CloseRedisClient() {
 	redisURL = ""
 }
 
+// PingRedis implements the ping redis logic.
 func PingRedis(ctx context.Context, client *redis.Client) error {
 	return client.Ping(ctx).Err()
 }
 
+// RedisEval implements the redis eval logic.
 func RedisEval(ctx context.Context, client *redis.Client, script string, keys []string, args []any) (any, error) {
 	return client.Eval(ctx, script, keys, args...).Result()
 }

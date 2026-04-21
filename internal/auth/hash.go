@@ -21,6 +21,7 @@ const (
 	digestBytes = 32
 )
 
+// GenerateAPIKey generates the APIKey.
 func GenerateAPIKey(prefix string) (string, error) {
 	if strings.TrimSpace(prefix) == "" {
 		prefix = APIKeyPrefix
@@ -32,6 +33,7 @@ func GenerateAPIKey(prefix string) (string, error) {
 	return prefix + base64.RawURLEncoding.EncodeToString(buf), nil
 }
 
+// HashAPIKey returns true if the condition is met.
 func HashAPIKey(apiKey string, iterations int) (string, error) {
 	if iterations <= 0 {
 		iterations = PBKDF2Iterations
@@ -44,6 +46,7 @@ func HashAPIKey(apiKey string, iterations int) (string, error) {
 	return PBKDF2Scheme + "$" + strconv.Itoa(iterations) + "$" + toB64(salt) + "$" + toB64(digest), nil
 }
 
+// VerifyAPIKey verifies the APIKey.
 func VerifyAPIKey(apiKey string, storedHash string) bool {
 	parts := strings.SplitN(storedHash, "$", 4)
 	if len(parts) != 4 {

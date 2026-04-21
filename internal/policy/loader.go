@@ -10,11 +10,13 @@ import (
 
 const DefaultPolicyPath = "config/policies.yaml"
 
+// LoadError represents the loaderror configuration or data.
 type LoadError struct {
 	Path string
 	Err  error
 }
 
+// Error implements the error logic.
 func (e *LoadError) Error() string {
 	if e.Err == nil {
 		return fmt.Sprintf("policy load failed: %s", e.Path)
@@ -22,10 +24,12 @@ func (e *LoadError) Error() string {
 	return fmt.Sprintf("policy load failed: %s: %v", e.Path, e.Err)
 }
 
+// Unwrap implements the unwrap logic.
 func (e *LoadError) Unwrap() error {
 	return e.Err
 }
 
+// LoadPolicy loads the Policy.
 func LoadPolicy(path string) (Policy, error) {
 	resolved := path
 	if resolved == "" {

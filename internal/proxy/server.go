@@ -32,11 +32,13 @@ const (
 	unknownToolName        = "__unknown_tool__"
 )
 
+// AuthContext represents the authcontext configuration or data.
 type AuthContext struct {
 	APIKeyID string
 	Role     string
 }
 
+// RunStdioGateway runs the gateway.
 func RunStdioGateway(settings config.Settings) error {
 	ctx := context.Background()
 

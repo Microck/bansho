@@ -13,6 +13,7 @@ var (
 	postgresDSN  string
 )
 
+// GetPostgresPool returns the PostgresPool.
 func GetPostgresPool(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
 	postgresMu.Lock()
 	defer postgresMu.Unlock()
@@ -35,6 +36,7 @@ func GetPostgresPool(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
 	return postgresPool, nil
 }
 
+// ClosePostgresPool closes the connection and releases resources.
 func ClosePostgresPool() {
 	postgresMu.Lock()
 	defer postgresMu.Unlock()

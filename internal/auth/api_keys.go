@@ -10,17 +10,20 @@ import (
 
 const DefaultAPIKeyRole = "readonly"
 
+// ResolvedKey represents the resolvedkey configuration or data.
 type ResolvedKey struct {
 	APIKeyID string
 	Role     string
 }
 
+// ListedKey represents the listedkey configuration or data.
 type ListedKey struct {
 	APIKeyID string
 	Role     string
 	Revoked  bool
 }
 
+// CreateAPIKey creates a new APIKey.
 func CreateAPIKey(ctx context.Context, pool *pgxpool.Pool, role string) (apiKeyID string, apiKey string, err error) {
 	normalizedRole := normalizeRole(role)
 	apiKey, err = GenerateAPIKey(APIKeyPrefix)
@@ -39,6 +42,7 @@ func CreateAPIKey(ctx context.Context, pool *pgxpool.Pool, role string) (apiKeyI
 	return id.String(), apiKey, nil
 }
 
+// ResolveAPIKey resolves the APIKey.
 func ResolveAPIKey(ctx context.Context, pool *pgxpool.Pool, presentedKey string) (*ResolvedKey, error) {
 	if strings.TrimSpace(presentedKey) == "" {
 		return nil, nil
@@ -69,6 +73,7 @@ func ResolveAPIKey(ctx context.Context, pool *pgxpool.Pool, presentedKey string)
 	return resolved, nil
 }
 
+// ListAPIKeys lists all APIKeys.
 func ListAPIKeys(ctx context.Context, pool *pgxpool.Pool) ([]ListedKey, error) {
 	rows, err := pool.Query(ctx, `
 		SELECT id, role, (revoked_at IS NOT NULL) AS revoked
@@ -98,6 +103,7 @@ func ListAPIKeys(ctx context.Context, pool *pgxpool.Pool) ([]ListedKey, error) {
 	return out, nil
 }
 
+// RevokeAPIKey revokes the APIKey.
 func RevokeAPIKey(ctx context.Context, pool *pgxpool.Pool, apiKeyID string) (bool, error) {
 	parsed, err := uuid.Parse(strings.TrimSpace(apiKeyID))
 	if err != nil {
