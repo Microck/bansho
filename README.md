@@ -4,6 +4,8 @@
 </picture>
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Go Reference](https://pkg.go.dev/badge/github.com/microck/bansho.svg)](https://pkg.go.dev/github.com/microck/bansho)
+[![CI](https://github.com/Microck/bansho/actions/workflows/ci.yml/badge.svg)](https://github.com/Microck/bansho/actions/workflows/ci.yml)
 
 **Drop Bansho in front of any MCP server to get API-key auth, role-scoped tool access, rate limiting, and a full audit log with zero upstream changes.**
 
@@ -14,6 +16,51 @@ Bansho sits in front of any MCP server and adds API-key authentication, role-bas
 **Built for Azure**: Deploy to Azure using Azure Cache for Redis and Azure Database for PostgreSQL. See [`infra/README.md`](infra/README.md) for deployment instructions.
 
 ![screenshot-dashboard](https://github.com/user-attachments/assets/7b0496c4-168d-49c1-ab02-392133d542bc)
+
+---
+
+## Table of Contents
+
+- [How It Works](#how-it-works)
+- [Features](#features)
+- [Quickstart](#quickstart)
+  - [Local Development](#local-development)
+  - [Azure Deployment](#azure-deployment)
+- [Installation](#installation)
+  - [From source](#from-source)
+  - [Binaries](#binaries)
+  - [Docker](#docker)
+- [Usage](#usage)
+  - [stdio upstream (spawn a local server)](#stdio-upstream-spawn-a-local-server)
+  - [HTTP upstream (forward to a running server)](#http-upstream-forward-to-a-running-server)
+  - [Passing the API key from a client](#passing-the-api-key-from-a-client)
+- [CLI Reference](#cli-reference)
+  - [`bansho serve`](#bansho-serve)
+  - [`bansho dashboard`](#bansho-dashboard)
+  - [`bansho keys create`](#bansho-keys-create)
+  - [`bansho keys list`](#bansho-keys-list)
+  - [`bansho keys revoke`](#bansho-keys-revoke)
+- [Configuration](#configuration)
+  - [Environment variables](#environment-variables)
+  - [Policy YAML schema](#policy-yaml-schema)
+- [Demo: Before / After](#demo-before-after)
+  - [Run the end-to-end demo](#run-the-end-to-end-demo)
+- [Dashboard / Audit API](#dashboard-audit-api)
+  - [`GET /dashboard`](#get-dashboard)
+  - [`GET /api/events`](#get-apievents)
+- [Architecture](#architecture)
+  - [Pipeline order](#pipeline-order)
+  - [Source layout](#source-layout)
+- [Development](#development)
+  - [Local dev loop](#local-dev-loop)
+  - [Rebuilding after changes](#rebuilding-after-changes)
+  - [Policy iteration](#policy-iteration)
+  - [Schema migrations](#schema-migrations)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [Security](#security)
+- [License](#license)
+- [Origin](#origin)
 
 ---
 
